@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRI:P</title>
+  <style>
+    :root {
+      --bg-a: #b9d8ee;
+      --bg-b: #e7f1e2;
+      --bg-c: #f4d98e;
+      --ink: #0b1020;
+      --muted: rgba(11, 16, 32, 0.6);
+      --card: rgba(255, 255, 255, 0.72);
+      --stroke: rgba(255, 255, 255, 0.72);
+      --stroke-strong: rgba(255, 255, 255, 0.92);
+      --shadow: 0 22px 54px rgba(0, 0, 0, 0.16);
+      --radius-2xl: 44px;
+      --radius-xl: 32px;
+      --radius-lg: 26px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --accent: #ffd36d;
+      --accent-2: #ffe7a6;
+      --transition: 360ms cubic-bezier(.2,.8,.2,1);
+      --phone-width: clamp(292px, 34vw, 392px);
+      --phone-height: calc(var(--phone-width) * 2.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: var(--ink);
+    }
+
+    body {
+      background:
+        radial-gradient(900px 720px at 15% 10%, rgba(185, 216, 238, 0.98), rgba(185, 216, 238, 0) 60%),
+        radial-gradient(900px 720px at 85% 18%, rgba(231, 241, 226, 0.92), rgba(231, 241, 226, 0) 62%),
+        radial-gradient(980px 820px at 56% 92%, rgba(244, 217, 142, 0.96), rgba(244, 217, 142, 0) 66%),
+        linear-gradient(135deg, var(--bg-a), var(--bg-b) 54%, var(--bg-c));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      height: 100dvh;
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      gap: 16px;
+      padding: clamp(16px, 3vw, 28px);
+    }
+
+    .deck {
+      display: grid;
+      align-content: start;
+      justify-items: center;
+      min-height: 0;
+      overflow: auto;
+      padding-bottom: 8px;
+    }
+
+    .track {
+      width: min(1160px, 100%);
+      display: flex;
+      transition: transform var(--transition);
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .track { transition: none; }
+    }
+
+    .scene {
+      width: 100%;
+      flex: 0 0 100%;
+      display: grid;
+      align-items: start;
+      justify-items: center;
+      padding: clamp(10px, 1.6vw, 16px) 0;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1160px;
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.36);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: clamp(16px, 2.2vw, 26px);
+      display: grid;
+      gap: clamp(14px, 2vw, 18px);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: baseline;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: clamp(22px, 2.6vw, 34px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .panel-copy {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(11, 16, 32, 0.62);
+      max-width: 76ch;
+    }
+
+    .panel-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.64);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(11, 16, 32, 0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel-body {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero {
+      width: 100%;
+      max-width: 1160px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: clamp(18px, 3vw, 34px);
+      align-items: center;
+      padding: clamp(18px, 3vw, 30px);
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.36);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-kicker {
+      font-size: clamp(14px, 1.4vw, 18px);
+      font-weight: 700;
+      color: rgba(11, 16, 32, 0.66);
+      letter-spacing: 0.01em;
+    }
+
+    .hero-title {
+      margin: 10px 0 0;
+      font-size: clamp(44px, 5.5vw, 84px);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .hero-actions {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.64);
+      backdrop-filter: blur(12px);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .primary-cta {
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 900;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      box-shadow: 0 16px 30px rgba(255, 196, 73, 0.42);
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .primary-cta:active { transform: translateY(1px); }
+
+    .hero-visual {
+      width: 100%;
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
+      padding: clamp(10px, 1.6vw, 16px);
+      overflow: hidden;
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 26px;
+    }
+
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    .phone {
+      width: var(--phone-width);
+      height: var(--phone-height);
+      border-radius: 56px;
+      border: 10px solid rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.36);
+      box-shadow: 0 30px 72px rgba(0, 0, 0, 0.22);
+      padding: 14px;
+      position: relative;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 44px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.62));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .phone-inner {
+      position: relative;
+      height: 100%;
+      border-radius: 44px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .statusbar {
+      padding: 14px 18px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: -0.02em;
+    }
+
+    .status-icons {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: rgba(11, 16, 32, 0.75);
+      font-weight: 900;
+    }
+
+    .screen {
+      padding: 0 18px 12px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      overflow: auto;
+    }
+
+    .screen-title {
+      display: grid;
+      gap: 8px;
+      padding: 4px 0 2px;
+    }
+
+    .brand-mark {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .screen-subtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(11, 16, 32, 0.62);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(11, 16, 32, 0.12);
+      background: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(11, 16, 32, 0.78);
+      cursor: default;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .choice {
+      border-radius: 24px;
+      border: 1px solid rgba(11, 16, 32, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 14px;
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .choice:active { transform: translateY(1px); }
+    .choice.is-selected {
+      border-color: rgba(11, 16, 32, 0.18);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.10);
+    }
+
+    .choice h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .choice p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(11, 16, 32, 0.62);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .option-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 6px;
+    }
+
+    .option-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 900px) {
+      .option-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .option-grid,
+      .option-grid.two { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      border-radius: 24px;
+      border: 1px solid rgba(11, 16, 32, 0.12);
+      background: rgba(255, 255, 255, 0.78);
+      padding: 14px;
+      cursor: pointer;
+      display: grid;
+      gap: 10px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .card.has-media {
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .card-media {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(11, 16, 32, 0.08);
+      background: rgba(11, 16, 32, 0.04);
+      aspect-ratio: 16 / 10;
+    }
+
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card:active { transform: translateY(1px); }
+    .card.is-selected {
+      border-color: rgba(11, 16, 32, 0.18);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.10);
+    }
+
+    .card-title {
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-size: 15px;
+    }
+
+    .card-copy {
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(11, 16, 32, 0.62);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(11, 16, 32, 0.06);
+      color: rgba(11, 16, 32, 0.72);
+    }
+
+    .phone-nav {
+      border-top: 1px solid rgba(11, 16, 32, 0.08);
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .nav-btn {
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(11, 16, 32, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .nav-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.35;
+      transform: none;
+    }
+
+    .nav-cta {
+      border: 0;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      box-shadow: 0 12px 26px rgba(255, 196, 73, 0.36);
+    }
+
+    .nav-summary {
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(11, 16, 32, 0.58);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .footer {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.44);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 14px 14px 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .controls {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.44);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls-meta {
+      display: grid;
+      gap: 6px;
+    }
+
+    .controls-step {
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-size: 14px;
+    }
+
+    .controls-copy {
+      font-weight: 800;
+      font-size: 12px;
+      color: rgba(11, 16, 32, 0.6);
+    }
+
+    .controls-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: baseline;
+    }
+
+    .footer-title {
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-size: 14px;
+    }
+
+    .footer-badge {
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(11, 16, 32, 0.62);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .footer-card {
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      min-height: 70px;
+    }
+
+    .footer-label {
+      font-size: 11px;
+      font-weight: 900;
+      color: rgba(11, 16, 32, 0.58);
+      letter-spacing: 0.02em;
+    }
+
+    .footer-value {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <main class="deck" role="application" aria-label="TRI:P 단계별 선택">
+      <div class="track" id="track">
+        <section class="scene" aria-label="인트로">
+          <div class="hero">
+            <div class="hero-copy">
+              <div class="hero-kicker">No Planning Just Tap</div>
+              <h1 class="hero-title">TRI:P</h1>
+              <div class="hero-actions">
+                <a class="store-btn" href="https://itunes.apple.com/app/id1225499481" target="_blank" rel="noreferrer">App Store</a>
+                <a class="store-btn" href="http://play.google.com/store/apps/details?id=com.titicacacorp.triple" target="_blank" rel="noreferrer">Google Play</a>
+                <button class="primary-cta" type="button" id="introStart">시작하기</button>
+              </div>
+            </div>
+            <div class="hero-visual">
+              <img src="../uiex.png" alt="TRI:P UI 예시 이미지" />
+            </div>
+          </div>
+        </section>
+
+        <section class="scene" aria-label="국내 해외 선택">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2 class="panel-title">국내 &amp; 해외</h2>
+                <p class="panel-copy">여기서 한 번만 고르면 이후 단계의 카드 구성이 자동으로 바뀝니다.</p>
+              </div>
+              <span class="panel-badge">단일 선택</span>
+            </header>
+            <div class="panel-body">
+              <div class="choice-grid" id="modeChoices"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="scene" aria-label="여행지 선택">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2 class="panel-title">여행지 선택</h2>
+                <p class="panel-copy" id="spotLead">국내/해외 선택에 따라 카드가 바뀝니다.</p>
+              </div>
+              <span class="panel-badge" id="spotBadge">선택 필요</span>
+            </header>
+            <div class="panel-body">
+              <div class="option-grid" id="spotList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="scene" aria-label="일정 선택">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2 class="panel-title">일정 선택</h2>
+                <p class="panel-copy" id="itineraryLead">여행지를 선택하면 일정이 열립니다.</p>
+              </div>
+              <span class="panel-badge" id="itineraryBadge">선택 필요</span>
+            </header>
+            <div class="panel-body">
+              <div class="option-grid two" id="itineraryList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="scene" aria-label="동반자 선택">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2 class="panel-title">동반자 선택</h2>
+                <p class="panel-copy" id="companionLead">일정에 맞는 동반자 유형을 고르세요.</p>
+              </div>
+              <span class="panel-badge" id="companionBadge">선택 필요</span>
+            </header>
+            <div class="panel-body">
+              <div class="option-grid two" id="companionList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="scene" aria-label="최종 확인">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2 class="panel-title">최종 확인</h2>
+                <p class="panel-copy">모든 선택 내용을 한 화면에서 확인합니다.</p>
+              </div>
+              <span class="panel-badge">최종</span>
+            </header>
+            <div class="panel-body">
+              <div class="list" id="finalList"></div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <section class="controls" aria-label="단계 이동">
+      <div class="controls-meta">
+        <div class="controls-step" id="controlsStep">Scene 1 / 6</div>
+        <div class="controls-copy" id="controlsCopy">시작하기를 누르면 국내/해외 선택으로 이동합니다.</div>
+      </div>
+      <div class="controls-actions">
+        <button class="nav-btn" type="button" id="backButton">이전</button>
+        <button class="nav-btn nav-cta" type="button" id="nextButton">다음</button>
+        <button class="nav-btn" type="button" id="resetButton">처음부터</button>
+      </div>
+    </section>
+
+    <section class="footer" aria-label="누적 선택 요약">
+      <div class="footer-top">
+        <div class="footer-title">누적 선택 요약</div>
+        <div class="footer-badge" id="footerBadge">0 / 4 선택 완료</div>
+      </div>
+      <div class="footer-grid" id="footerGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const DATA = {
+      domestic: {
+        label: "국내",
+        spots: [
+          {
+            id: "gangneung",
+            name: "강릉",
+            region: "강원",
+            mood: "바다 · 산책",
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+            schedules: [
+              { id: "slow", title: "천천히 걷는 1박 2일", pace: "느긋", highlights: ["안목해변", "커피거리", "산책"] },
+              { id: "active", title: "알차게 도는 당일치기", pace: "활동적", highlights: ["전망대", "시장", "드라이브"] }
+            ]
+          },
+          {
+            id: "jeonju",
+            name: "전주",
+            region: "전북",
+            mood: "한옥 · 미식",
+            image: "https://images.unsplash.com/photo-1605702060921-730b4c0f9b6b?auto=format&fit=crop&w=1600&q=80",
+            schedules: [
+              { id: "food", title: "맛집 중심 1박 2일", pace: "여유", highlights: ["한옥마을", "야시장", "디저트"] },
+              { id: "photo", title: "감성 사진 코스", pace: "보통", highlights: ["골목", "전시", "카페"] }
+            ]
+          }
+        ]
+      },
+      international: {
+        label: "해외",
+        spots: [
+          {
+            id: "tokyo",
+            name: "도쿄",
+            region: "일본",
+            mood: "도시 · 쇼핑",
+            image: "https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&w=1600&q=80",
+            schedules: [
+              { id: "classic", title: "핵심만 2박 3일", pace: "보통", highlights: ["시부야", "아사쿠사", "맛집"] },
+              { id: "theme", title: "취향 저격 3박 4일", pace: "활동적", highlights: ["전시", "빈티지", "서점"] }
+            ]
+          },
+          {
+            id: "danang",
+            name: "다낭",
+            region: "베트남",
+            mood: "휴양 · 리조트",
+            image: "https://images.unsplash.com/photo-1537956965359-7573183d1f57?auto=format&fit=crop&w=1600&q=80",
+            schedules: [
+              { id: "resort", title: "리조트 집중 3박 4일", pace: "느긋", highlights: ["풀", "마사지", "선셋"] },
+              { id: "mix", title: "휴양+투어 4박 5일", pace: "보통", highlights: ["바나힐", "미케비치", "호이안"] }
+            ]
+          }
+        ]
+      }
+    };
+
+    const COMPANIONS = [
+      { id: "solo", label: "혼자", description: "가볍게 떠나기, 일정 유연", fit: ["산책", "카페", "전시", "서점"] },
+      { id: "couple", label: "연인", description: "감성 코스, 사진·맛집", fit: ["선셋", "디저트", "골목", "맛집"] },
+      { id: "friends", label: "친구", description: "활동적인 코스, 다양한 선택", fit: ["시장", "쇼핑", "드라이브", "투어"] },
+      { id: "family", label: "가족", description: "동선 안정, 휴식 중심", fit: ["리조트", "풀", "휴양", "느긋"] }
+    ];
+
+    const state = {
+      step: 0,
+      mode: null,
+      spotId: null,
+      itineraryId: null,
+      companionId: null
+    };
+
+    const track = document.getElementById("track");
+    const introStart = document.getElementById("introStart");
+    const spotBadge = document.getElementById("spotBadge");
+    const itineraryBadge = document.getElementById("itineraryBadge");
+    const companionBadge = document.getElementById("companionBadge");
+    const controlsStep = document.getElementById("controlsStep");
+    const controlsCopy = document.getElementById("controlsCopy");
+    const backButton = document.getElementById("backButton");
+    const nextButton = document.getElementById("nextButton");
+    const resetButton = document.getElementById("resetButton");
+
+    const modeChoices = document.getElementById("modeChoices");
+    const spotLead = document.getElementById("spotLead");
+    const spotList = document.getElementById("spotList");
+    const itineraryLead = document.getElementById("itineraryLead");
+    const itineraryList = document.getElementById("itineraryList");
+    const companionLead = document.getElementById("companionLead");
+    const companionList = document.getElementById("companionList");
+    const finalList = document.getElementById("finalList");
+
+    const footerGrid = document.getElementById("footerGrid");
+    const footerBadge = document.getElementById("footerBadge");
+
+    function currentModeData() {
+      return state.mode ? DATA[state.mode] : null;
+    }
+
+    function currentSpot() {
+      const data = currentModeData();
+      if (!data) return null;
+      return data.spots.find((spot) => spot.id === state.spotId) || null;
+    }
+
+    function currentItinerary() {
+      const spot = currentSpot();
+      if (!spot) return null;
+      return spot.schedules.find((item) => item.id === state.itineraryId) || null;
+    }
+
+    function currentCompanion() {
+      return COMPANIONS.find((item) => item.id === state.companionId) || null;
+    }
+
+    function resetDownstream(fromStep) {
+      if (fromStep <= 1) {
+        state.spotId = null;
+        state.itineraryId = null;
+        state.companionId = null;
+      } else if (fromStep === 2) {
+        state.itineraryId = null;
+        state.companionId = null;
+      } else if (fromStep === 3) {
+        state.companionId = null;
+      }
+    }
+
+    function completedSelectionCount() {
+      return [
+        Boolean(state.mode),
+        Boolean(state.spotId),
+        Boolean(state.itineraryId),
+        Boolean(state.companionId)
+      ].filter(Boolean).length;
+    }
+
+    function canMoveNext(step) {
+      if (step === 0) return true;
+      if (step === 1) return Boolean(state.mode);
+      if (step === 2) return Boolean(state.spotId);
+      if (step === 3) return Boolean(state.itineraryId);
+      if (step === 4) return Boolean(state.companionId);
+      return false;
+    }
+
+    function summaryText() {
+      const parts = [];
+      if (state.mode) parts.push(currentModeData().label);
+      if (state.spotId) parts.push(currentSpot().name);
+      if (state.itineraryId) parts.push(currentItinerary().title);
+      if (state.companionId) parts.push(currentCompanion().label);
+      return parts.length ? parts.join(" · ") : "선택 대기";
+    }
+
+    function setStep(nextStep) {
+      const clamped = Math.max(0, Math.min(5, nextStep));
+      state.step = clamped;
+      track.style.transform = `translateX(${-100 * clamped}%)`;
+      render();
+    }
+
+    function handleModeSelect(mode) {
+      if (state.mode !== mode) {
+        state.mode = mode;
+        resetDownstream(1);
+      }
+      render();
+      window.setTimeout(() => setStep(2), 200);
+    }
+
+    function handleSpotSelect(spotId) {
+      if (state.spotId !== spotId) {
+        state.spotId = spotId;
+        resetDownstream(2);
+      }
+      render();
+      window.setTimeout(() => setStep(3), 200);
+    }
+
+    function handleItinerarySelect(itineraryId) {
+      if (state.itineraryId !== itineraryId) {
+        state.itineraryId = itineraryId;
+        resetDownstream(3);
+      }
+      render();
+      window.setTimeout(() => setStep(4), 200);
+    }
+
+    function handleCompanionSelect(companionId) {
+      state.companionId = companionId;
+      render();
+      window.setTimeout(() => setStep(5), 200);
+    }
+
+    function renderMode() {
+      modeChoices.innerHTML = `
+        <button type="button" class="choice ${state.mode === "domestic" ? "is-selected" : ""}" data-mode="domestic">
+          <h3>국내</h3>
+          <p>가볍게 떠나는 근교·바다·미식 코스</p>
+        </button>
+        <button type="button" class="choice ${state.mode === "international" ? "is-selected" : ""}" data-mode="international">
+          <h3>해외</h3>
+          <p>취향 확장, 도시·휴양·투어 코스</p>
+        </button>
+      `;
+
+      modeChoices.querySelectorAll("[data-mode]").forEach((button) => {
+        button.addEventListener("click", () => handleModeSelect(button.dataset.mode));
+      });
+    }
+
+    function renderSpots() {
+      const data = currentModeData();
+      if (!data) {
+        spotLead.textContent = "먼저 국내/해외를 선택해야 여행지 목록이 표시됩니다.";
+        spotBadge.textContent = "선택 대기";
+        spotList.innerHTML = "";
+        return;
+      }
+      spotLead.textContent = `${data.label} 선택 결과에 맞는 여행지 카드입니다. 하나를 고르면 다음 화면으로 이동합니다.`;
+      spotBadge.textContent = state.spotId ? "선택 완료" : "선택 필요";
+      spotList.innerHTML = data.spots.map((spot) => {
+        const selected = state.spotId === spot.id ? "is-selected" : "";
+        return `
+          <button type="button" class="card has-media ${selected}" data-spot="${spot.id}">
+            <div class="card-media"><img src="${spot.image}" alt="${spot.name}"></div>
+            <div class="card-title">${spot.name}</div>
+            <div class="card-copy">${spot.mood}</div>
+            <div class="meta">
+              <span class="chip">${spot.region}</span>
+              <span class="chip">${data.label}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      spotList.querySelectorAll("[data-spot]").forEach((button) => {
+        button.addEventListener("click", () => handleSpotSelect(button.dataset.spot));
+      });
+    }
+
+    function renderItineraries() {
+      const spot = currentSpot();
+      if (!spot) {
+        itineraryLead.textContent = "여행지를 선택하면 일정 스타일 목록이 표시됩니다.";
+        itineraryBadge.textContent = "선택 대기";
+        itineraryList.innerHTML = "";
+        return;
+      }
+      itineraryLead.textContent = `${spot.name}에 어울리는 일정입니다. 하나를 고르면 다음 화면으로 이동합니다.`;
+      itineraryBadge.textContent = state.itineraryId ? "선택 완료" : "선택 필요";
+      itineraryList.innerHTML = spot.schedules.map((item) => {
+        const selected = state.itineraryId === item.id ? "is-selected" : "";
+        return `
+          <button type="button" class="card ${selected}" data-itinerary="${item.id}">
+            <div class="card-title">${item.title}</div>
+            <div class="card-copy">${item.pace} · ${item.highlights.join(" · ")}</div>
+            <div class="meta">
+              <span class="chip">${spot.region}</span>
+              <span class="chip">${item.pace}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      itineraryList.querySelectorAll("[data-itinerary]").forEach((button) => {
+        button.addEventListener("click", () => handleItinerarySelect(button.dataset.itinerary));
+      });
+    }
+
+    function renderCompanions() {
+      const spot = currentSpot();
+      const itinerary = currentItinerary();
+      if (!spot || !itinerary) {
+        companionLead.textContent = "일정을 선택하면 동반자 유형 목록이 표시됩니다.";
+        companionBadge.textContent = "선택 대기";
+        companionList.innerHTML = "";
+        return;
+      }
+      companionLead.textContent = `${spot.name} · ${itinerary.title}에 맞는 동반자를 선택하세요.`;
+      companionBadge.textContent = state.companionId ? "선택 완료" : "선택 필요";
+      const emphasis = [spot.mood, ...itinerary.highlights].join(" ");
+      companionList.innerHTML = COMPANIONS.map((item) => {
+        const selected = state.companionId === item.id ? "is-selected" : "";
+        const recommended = item.fit.some((keyword) => emphasis.includes(keyword));
+        return `
+          <button type="button" class="card ${selected}" data-companion="${item.id}">
+            <div class="card-title">${item.label}${recommended ? " · 추천" : ""}</div>
+            <div class="card-copy">${item.description}</div>
+            <div class="meta">
+              <span class="chip">${recommended ? "추천 조합" : "선택 가능"}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      companionList.querySelectorAll("[data-companion]").forEach((button) => {
+        button.addEventListener("click", () => handleCompanionSelect(button.dataset.companion));
+      });
+    }
+
+    function renderFinal() {
+      const mode = currentModeData();
+      const spot = currentSpot();
+      const itinerary = currentItinerary();
+      const companion = currentCompanion();
+      if (!mode || !spot || !itinerary || !companion) {
+        finalList.innerHTML = `
+          <div class="card" style="cursor:default;">
+            <div class="card-title">선택 대기</div>
+            <div class="card-copy">앞선 단계의 필수 선택을 완료하면 최종 내용이 표시됩니다.</div>
+          </div>
+        `;
+        return;
+      }
+      finalList.innerHTML = `
+        <div class="card" style="cursor:default;">
+          <div class="card-title">${mode.label} · ${spot.name}</div>
+          <div class="card-copy">${itinerary.title} · ${companion.label}</div>
+          <div class="meta">
+            <span class="chip">${spot.region}</span>
+            <span class="chip">${itinerary.pace}</span>
+            <span class="chip">${itinerary.highlights.join(" · ")}</span>
+          </div>
+        </div>
+        <div class="card" style="cursor:default;">
+          <div class="card-title">확인</div>
+          <div class="card-copy">여행 구분: ${mode.label}</div>
+          <div class="card-copy">여행지: ${spot.name}</div>
+          <div class="card-copy">일정: ${itinerary.title}</div>
+          <div class="card-copy">동반자: ${companion.label}</div>
+        </div>
+      `;
+    }
+
+    function renderFooter() {
+      const values = [
+        { label: "여행 구분", value: state.mode ? currentModeData().label : "미선택" },
+        { label: "여행지", value: state.spotId ? currentSpot().name : "미선택" },
+        { label: "일정", value: state.itineraryId ? currentItinerary().title : "미선택" },
+        { label: "동반자", value: state.companionId ? currentCompanion().label : "미선택" }
+      ];
+      footerGrid.innerHTML = values.map((item) => `
+        <div class="footer-card">
+          <div class="footer-label">${item.label}</div>
+          <div class="footer-value">${item.value}</div>
+        </div>
+      `).join("");
+      footerBadge.textContent = `${completedSelectionCount()} / 4 선택 완료`;
+    }
+
+    function renderControls() {
+      const stepLabel = `Scene ${state.step + 1} / 6`;
+      controlsStep.textContent = stepLabel;
+      if (state.step === 0) controlsCopy.textContent = "시작하기를 누르면 국내/해외 선택으로 이동합니다.";
+      if (state.step === 1) controlsCopy.textContent = "국내 또는 해외를 선택해야 다음 단계로 진행할 수 있습니다.";
+      if (state.step === 2) controlsCopy.textContent = "여행지를 선택해야 다음 단계로 진행할 수 있습니다.";
+      if (state.step === 3) controlsCopy.textContent = "일정을 선택해야 다음 단계로 진행할 수 있습니다.";
+      if (state.step === 4) controlsCopy.textContent = "동반자를 선택해야 최종 확인으로 이동합니다.";
+      if (state.step === 5) controlsCopy.textContent = "최종 선택 내용을 확인한 뒤 처음부터 다시 진행할 수 있습니다.";
+
+      backButton.disabled = state.step === 0;
+      nextButton.disabled = state.step === 5 ? true : !canMoveNext(state.step);
+      if (state.step === 0) nextButton.textContent = "시작";
+      else if (state.step === 4) nextButton.textContent = "최종 확인";
+      else if (state.step === 5) nextButton.textContent = "완료";
+      else nextButton.textContent = "다음";
+      resetButton.disabled = completedSelectionCount() === 0 && state.step === 0;
+    }
+
+    function render() {
+      renderMode();
+      renderSpots();
+      renderItineraries();
+      renderCompanions();
+      renderFinal();
+      renderFooter();
+      renderControls();
+    }
+
+    introStart.addEventListener("click", () => setStep(1));
+
+    backButton.addEventListener("click", () => setStep(state.step - 1));
+    nextButton.addEventListener("click", () => {
+      if (state.step === 5) return;
+      if (!canMoveNext(state.step)) return;
+      setStep(state.step + 1);
+    });
+
+    resetButton.addEventListener("click", () => {
+      state.step = 0;
+      state.mode = null;
+      state.spotId = null;
+      state.itineraryId = null;
+      state.companionId = null;
+      setStep(0);
+    });
+
+    setStep(0);
+  </script>
+</body>
+</html>

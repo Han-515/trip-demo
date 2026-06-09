@@ -1,0 +1,3838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>TRI:P Mobile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <style>
+    :root {
+      --primary: #050038;
+      --canvas: #ffffff;
+      --surface: #f6f7fb;
+      --hairline: rgba(5, 0, 56, 0.12);
+      --hairline-soft: rgba(5, 0, 56, 0.06);
+      --hairline-strong: rgba(5, 0, 56, 0.18);
+      --shadow-2: rgba(5, 0, 56, 0.06) 0px 4px 12px 0px;
+      --shadow-3: rgba(5, 0, 56, 0.08) 0px 12px 32px -4px;
+      --shadow-4: rgba(5, 0, 56, 0.12) 0px 16px 48px -8px;
+      --brand-yellow: #ffd36d;
+      --brand-blue: #2f80ed;
+      --rounded-md: 12px;
+      --rounded-xl: 16px;
+      --rounded-xxxl: 28px;
+      --rounded-full: 999px;
+      --fade: 220ms;
+
+      --ink: rgba(5, 0, 56, 1);
+      --sub: rgba(5, 0, 56, 0.62);
+      --card: var(--canvas);
+      --stroke: var(--hairline-strong);
+      --stroke-soft: var(--hairline-soft);
+      --shadow: var(--shadow-4);
+      --shadow-soft: var(--shadow-2);
+      --yellow: var(--brand-yellow);
+      --yellow-2: #ffe7a6;
+      --yellow-bg: #fff0c7;
+      --blue-pill: #e8f2ff;
+      --t2: rgba(5, 0, 56, 0.62);
+      --t3: rgba(5, 0, 56, 0.46);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: var(--ink); }
+    body { background: var(--surface); overflow: hidden; }
+    :focus-visible { outline: 3px solid rgba(47, 128, 237, 0.55); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+    .stage { height: 100%; display: grid; place-items: center; padding: 16px 12px; }
+    .app-container {
+      width: min(392px, 100%);
+      height: min(820px, 100dvh - 32px);
+      border-radius: 44px;
+      background: var(--canvas);
+      border: 1px solid var(--hairline-soft);
+      box-shadow: var(--shadow-3);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 34px 1fr 86px;
+      position: relative;
+    }
+
+    .notch {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(17, 17, 17, 0.10);
+      pointer-events: none;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17, 17, 17, 0.82);
+      background: transparent;
+    }
+
+    .screen {
+      display: none;
+      height: 100%;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .screen.active { display: block; animation: fadeIn var(--fade) ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .screen-pad { height: 100%; padding: 18px 18px 12px; overflow: hidden; }
+    .screen-scroll { height: 100%; overflow: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
+
+    .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .brand { font-weight: 900; letter-spacing: -0.04em; font-size: 22px; }
+    .page-title { font-weight: 900; letter-spacing: -0.03em; font-size: 20px; }
+    .icon { width: 28px; height: 28px; display: inline-block; color: rgba(17, 17, 17, 0.72); }
+    .icon-btn { border: 0; background: transparent; cursor: pointer; padding: 6px; border-radius: 10px; }
+
+    .mood-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .mood-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 17, 17, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17, 17, 17, 0.74);
+      cursor: pointer;
+      user-select: none;
+    }
+    .mood-tag.active { background: var(--blue-pill); border-color: rgba(47, 128, 237, 0.22); color: rgba(17, 17, 17, 0.9); }
+
+    .main-card {
+      margin-top: 14px;
+      border-radius: 26px;
+      background: transparent;
+    }
+    .main-img {
+      height: 360px;
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      display: grid;
+      align-items: end;
+      justify-items: center;
+      padding: 18px 16px 18px;
+      color: rgba(255, 255, 255, 0.96);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      text-align: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .btn-primary {
+      margin-top: 14px;
+      width: 100%;
+      min-height: 48px;
+      border-radius: var(--rounded-full);
+      border: 0;
+      background: var(--primary);
+      box-shadow: var(--shadow-2);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      color: rgba(255,255,255,0.96);
+    }
+    .btn-text {
+      margin-top: 10px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 900;
+      color: rgba(17, 17, 17, 0.52);
+    }
+
+    .swipe-container-rel { padding-top: 12px; display: grid; gap: 14px; }
+    .swipe-card-wrapper {
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .swipe-img { height: 340px; background-size: cover; background-position: center; }
+    .swipe-info { padding: 14px 14px 16px; display: grid; gap: 10px; }
+    .swipe-title-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .swipe-title { font-weight: 900; letter-spacing: -0.03em; font-size: 16px; }
+    .swipe-sub { font-weight: 900; color: rgba(17, 17, 17, 0.62); font-size: 12px; }
+    .status-pill, .time-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 17, 17, 0.10);
+      background: rgba(255, 255, 255, 0.72);
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(17, 17, 17, 0.72);
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+    .status-pill { border-color: rgba(47, 170, 93, 0.20); color: rgba(47, 170, 93, 0.92); }
+
+    .swipe-actions { display: flex; justify-content: center; gap: 28px; margin-top: 10px; }
+    .action-btn {
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 20px;
+      color: rgba(17, 17, 17, 0.9);
+    }
+    .btn-dislike { background: rgba(255, 255, 255, 0.92); }
+    .btn-like { background: linear-gradient(180deg, var(--yellow-2), var(--yellow)); }
+    .action-label-row { display: flex; justify-content: center; gap: 66px; font-weight: 900; font-size: 12px; color: rgba(17, 17, 17, 0.74); }
+
+    .date-row { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .date-title { font-weight: 900; letter-spacing: -0.02em; font-size: 18px; }
+    .date-text { font-weight: 900; letter-spacing: -0.02em; font-size: 14px; color: rgba(17, 17, 17, 0.72); }
+    .week-calendar { margin-top: 12px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    .day { text-align: center; font-weight: 900; font-size: 11px; color: rgba(17, 17, 17, 0.62); }
+    .date-num { margin-top: 6px; width: 26px; height: 26px; border-radius: 999px; display: grid; place-items: center; margin-left: auto; margin-right: auto; color: rgba(17, 17, 17, 0.92); }
+    .day.active .date-num { background: rgba(17, 17, 17, 0.92); color: rgba(255, 255, 255, 0.96); }
+
+    .timeline-card {
+      margin-top: 14px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      box-shadow: var(--shadow-soft);
+      padding: 14px;
+    }
+    .timeline-title { font-weight: 900; letter-spacing: -0.02em; font-size: 14px; }
+    .timeline-list { margin-top: 12px; display: grid; gap: 12px; }
+    .timeline-item { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; }
+    .t-time { font-weight: 900; font-size: 12px; color: rgba(17, 17, 17, 0.62); padding-top: 10px; }
+    .t-card { border-radius: 18px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(17, 17, 17, 0.08); padding: 10px; display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: center; }
+    .t-thumb { width: 44px; height: 44px; border-radius: 12px; background-size: cover; background-position: center; }
+    .t-name { font-weight: 900; font-size: 13px; letter-spacing: -0.02em; }
+    .t-meta { margin-top: 4px; font-weight: 900; font-size: 11px; color: rgba(17, 17, 17, 0.52); display: flex; gap: 6px; align-items: center; }
+
+    .profile-header { margin-top: 14px; border-radius: 22px; background: rgba(255, 255, 255, 0.86); border: 1px solid rgba(255, 255, 255, 0.74); box-shadow: var(--shadow-soft); padding: 14px; display: grid; justify-items: center; gap: 10px; }
+    .profile-img { width: 76px; height: 76px; border-radius: 999px; background: linear-gradient(180deg, rgba(47,128,237,0.22), rgba(255,211,109,0.42)); border: 3px solid rgba(255,255,255,0.92); box-shadow: var(--shadow-soft); }
+    .profile-name { font-weight: 900; letter-spacing: -0.03em; font-size: 16px; }
+    .profile-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .ptag { min-height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(47,128,237,0.22); background: rgba(47,128,237,0.12); font-weight: 900; font-size: 11px; color: rgba(17,17,17,0.82); }
+    .ptag.yellow { border-color: rgba(255, 211, 109, 0.56); background: rgba(255, 211, 109, 0.26); }
+    .saved-trips { margin-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .trip-card { border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.92); border: 1px solid rgba(17,17,17,0.08); box-shadow: var(--shadow-soft); }
+    .trip-img { aspect-ratio: 4 / 3; background-size: cover; background-position: center; }
+    .trip-name { padding: 10px; font-weight: 900; font-size: 12px; letter-spacing: -0.02em; }
+
+    .community-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .post-card { border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.92); border: 1px solid rgba(17,17,17,0.08); box-shadow: var(--shadow-soft); }
+    .post-img { aspect-ratio: 4 / 3; background-size: cover; background-position: center; }
+    .post-info { padding: 10px; display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+    .post-title { font-weight: 900; font-size: 12px; letter-spacing: -0.02em; }
+    .post-likes { margin-top: 6px; font-weight: 900; font-size: 11px; color: rgba(17,17,17,0.52); }
+    .fab { position: absolute; right: 18px; bottom: 104px; width: 54px; height: 54px; border-radius: 999px; border: 0; cursor: pointer; background: linear-gradient(180deg, var(--yellow-2), var(--yellow)); box-shadow: 0 18px 30px rgba(255, 196, 73, 0.42); font-weight: 900; font-size: 22px; color: rgba(17,17,17,0.92); }
+
+    .search-bar { margin-top: 12px; border-radius: 999px; background: rgba(255,255,255,0.92); border: 1px solid rgba(17,17,17,0.10); box-shadow: var(--shadow-soft); padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
+    .search-bar input { border: 0; outline: none; background: transparent; width: 100%; font: inherit; font-weight: 900; color: rgba(17,17,17,0.82); }
+    .search-white-box { margin-top: 12px; border-radius: 18px; background: rgba(255,255,255,0.86); border: 1px solid rgba(255,255,255,0.74); box-shadow: var(--shadow-soft); padding: 12px; }
+    .search-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .stag { min-height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(17,17,17,0.10); background: rgba(255,255,255,0.92); font-weight: 900; font-size: 12px; color: rgba(17,17,17,0.74); }
+    .info-box { margin-top: 12px; border-radius: 18px; background: rgba(255,255,255,0.86); border: 1px solid rgba(255,255,255,0.74); box-shadow: var(--shadow-soft); padding: 12px; display: grid; gap: 10px; }
+    .info-title { font-weight: 900; font-size: 14px; letter-spacing: -0.02em; }
+    .info-line { font-weight: 800; font-size: 12px; line-height: 1.6; color: rgba(17,17,17,0.62); }
+
+    .sin { display: grid; gap: 12px; }
+    .h-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .h-title { font-weight: 900; letter-spacing: -0.04em; font-size: 22px; }
+    .h-icons { display: flex; gap: 6px; align-items: center; }
+    .h-btn {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(17,17,17,0.08);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+    }
+
+    .mood-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .mood-row::-webkit-scrollbar { display: none; }
+    .mc {
+      flex: 0 0 auto;
+      min-height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.74);
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--t2);
+      cursor: pointer;
+    }
+    .mc.on {
+      background: var(--blue-pill);
+      border-color: rgba(47, 128, 237, 0.22);
+      color: rgba(17,17,17,0.92);
+    }
+
+    .sw-wrap { position: relative; min-height: 352px; padding: 0 6px; }
+    .sw-back {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 20px;
+      height: 286px;
+      border-radius: 26px;
+      transform: scale(0.96);
+      opacity: 0.42;
+      filter: blur(0.2px);
+      box-shadow: 0 16px 26px rgba(0,0,0,0.10);
+    }
+    .sw-card {
+      position: relative;
+      z-index: 1;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(255,255,255,0.80);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .sw-img {
+      height: 248px;
+      position: relative;
+      display: block;
+      background-size: cover;
+      background-position: center;
+    }
+    .sw-img::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.34));
+    }
+    .sw-emoji,
+    .sw-badge-op,
+    .sw-badge-wx { position: absolute; z-index: 1; }
+    .sw-emoji {
+      left: 12px;
+      top: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.86);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+    .sw-badge-op,
+    .sw-badge-wx {
+      min-height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+      font-size: 11px;
+      backdrop-filter: blur(8px);
+    }
+    .sw-badge-op { left: 12px; bottom: 12px; background: rgba(241, 255, 245, 0.92); color: #2faa5d; }
+    .sw-badge-wx { right: 12px; top: 12px; background: rgba(255,255,255,0.88); color: rgba(17,17,17,0.82); }
+    .sw-body {
+      padding: 14px 14px 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .sw-info { display: grid; gap: 5px; }
+    .sw-name { font-weight: 900; letter-spacing: -0.03em; font-size: 18px; }
+    .sw-sub { font-weight: 800; color: var(--t2); font-size: 12px; }
+    .sw-dist {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 800;
+      color: var(--t2);
+      font-size: 12px;
+    }
+    .sw-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 0 14px 14px;
+    }
+    .sw-tag {
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(17,17,17,0.06);
+      color: var(--t2);
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+      font-size: 11px;
+    }
+    .sw-tag.grn { background: rgba(47,170,93,0.14); color: #2faa5d; }
+
+    .sw-btns {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      justify-items: center;
+      gap: 18px;
+      margin-top: 4px;
+    }
+    .sw-no, .sw-mid, .sw-yes {
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      border: 1px solid rgba(17,17,17,0.08);
+      background: rgba(255,255,255,0.92);
+    }
+    .sw-no i, .sw-mid i, .sw-yes i { font-size: 22px; color: rgba(17,17,17,0.90); }
+    .sw-yes { background: linear-gradient(180deg, var(--yellow-2), var(--yellow)); }
+    .sw-lbl {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      margin-top: 4px;
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--t2);
+    }
+    .sw-lbl span:first-child { justify-self: start; }
+    .sw-lbl span:last-child { justify-self: end; }
+
+    .sec-title { font-weight: 900; letter-spacing: -0.02em; font-size: 14px; }
+    .near-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .near-scroll::-webkit-scrollbar { display: none; }
+    .nc {
+      flex: 0 0 78px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(17,17,17,0.08);
+      box-shadow: var(--shadow-soft);
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .nc-img {
+      height: 68px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,0.96);
+      font-size: 22px;
+      font-weight: 900;
+      text-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      background-size: cover;
+      background-position: center;
+    }
+    .nc-lbl { font-weight: 900; font-size: 11px; letter-spacing: -0.02em; }
+    .nc-sub { font-weight: 800; font-size: 10px; color: var(--t2); }
+
+    .d-gn { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80'); }
+    .d-jj { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&w=1200&q=80'); }
+    .d-je { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80'); }
+    .d-gy { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80'); }
+    .d-bs { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1544473244-f6895e69ad8b?auto=format&fit=crop&w=1200&q=80'); }
+    .d-sc { background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80'); }
+
+    .bottom-nav {
+      background: rgba(255, 255, 255, 0.86);
+      border-top: 1px solid rgba(17, 17, 17, 0.06);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 10px 8px 16px;
+      gap: 6px;
+    }
+    .nav-item {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      font-weight: 900;
+      font-size: 10px;
+      color: rgba(17, 17, 17, 0.46);
+    }
+    .nav-item svg { width: 20px; height: 20px; fill: rgba(17, 17, 17, 0.34); }
+    .nav-item.active { color: rgba(17, 17, 17, 0.92); }
+    .nav-item.active svg { fill: rgba(17, 17, 17, 0.92); }
+
+    .card {
+      border-radius: var(--rounded-xl);
+      background: var(--canvas);
+      border: 1px solid var(--hairline-soft);
+      box-shadow: var(--shadow-2);
+      overflow: hidden;
+    }
+    .card-pad { padding: 14px; }
+    .muted { color: var(--t2); }
+    .small { font-size: 12px; font-weight: 800; }
+    .btn-primary {
+      width: 100%;
+      min-height: 46px;
+      border-radius: var(--rounded-full);
+      border: 0;
+      background: var(--primary);
+      color: rgba(255,255,255,0.96);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: var(--shadow-2);
+    }
+    .btn-ghost {
+      width: 100%;
+      min-height: 44px;
+      border-radius: var(--rounded-full);
+      border: 1px solid var(--hairline-strong);
+      background: var(--canvas);
+      color: rgba(5,0,56,0.92);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-mini {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: var(--rounded-full);
+      border: 1px solid var(--hairline-strong);
+      background: var(--canvas);
+      color: rgba(5,0,56,0.92);
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-icon {
+      width: 34px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .intro-img {
+      height: 160px;
+      background-size: cover;
+      background-position: center;
+    }
+    .d-air {
+      background-image: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.28)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80');
+    }
+
+    #screen-intro {
+      background: #faf6ea;
+    }
+    #screen-home,
+    #screen-courses,
+    #screen-course-detail,
+    #screen-saved,
+    #screen-booking,
+    #screen-lodging,
+    #screen-transport,
+    #screen-payment {
+      background: #faf6ea;
+    }
+
+    .intro-mock {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .intro-mock-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .intro-hotspot {
+      position: absolute;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 22px;
+    }
+    .intro-hotspot:focus-visible {
+      outline: 2px solid rgba(47, 128, 237, 0.5);
+      outline-offset: 2px;
+    }
+    .hs-domestic {
+      left: 6%;
+      top: 47%;
+      width: 43%;
+      height: 26%;
+    }
+    .hs-overseas {
+      left: 51%;
+      top: 47%;
+      width: 43%;
+      height: 26%;
+    }
+
+    .intro-fallback {
+      height: 100%;
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .region-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+    .region-desc {
+      margin-top: 12px;
+      font-weight: 800;
+      color: rgba(17,17,17,0.62);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .region-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .region-btn {
+      border: 0;
+      border-radius: 28px;
+      padding: 20px;
+      height: 250px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+      transition: transform 180ms ease;
+    }
+    .region-btn:active { transform: scale(0.99); }
+    .region-emoji {
+      font-size: 24px;
+      line-height: 1;
+    }
+    .region-h2 {
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .region-copy {
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(17,17,17,0.62);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .region-btn.domestic { background: #fff0c7; }
+    .region-btn.overseas { background: #e8f2ff; }
+
+    .theme-hero {
+      background:
+        radial-gradient(460px 220px at 84% 40%, rgba(255, 211, 109, 0.62), rgba(255, 211, 109, 0) 60%),
+        radial-gradient(420px 240px at 16% 22%, rgba(47, 128, 237, 0.20), rgba(47, 128, 237, 0) 62%),
+        rgba(255,255,255,0.72);
+    }
+    .theme-hero-pad {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 18px;
+    }
+    .theme-hero-title {
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+    .theme-hero-desc {
+      margin-top: 8px;
+      font-weight: 800;
+      color: rgba(17,17,17,0.62);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .theme-hero-ill {
+      width: 92px;
+      height: 72px;
+      border-radius: 18px;
+      background: var(--canvas);
+      border: 1px solid var(--hairline-soft);
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      box-shadow: var(--shadow-soft);
+    }
+    .theme-chip-grid {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .theme-chip {
+      border: 1px solid var(--hairline-strong);
+      background: var(--canvas);
+      color: rgba(5,0,56,0.92);
+      border-radius: var(--rounded-full);
+      min-height: 38px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-2);
+    }
+    .theme-chip.on {
+      background: rgba(255, 211, 109, 0.32);
+      border-color: rgba(255, 211, 109, 0.72);
+    }
+    .theme-chip .ic {
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: rgba(5,0,56,0.06);
+      font-size: 12px;
+    }
+    .theme-cta {
+      width: 100%;
+      min-height: 52px;
+      border-radius: var(--rounded-full);
+      border: 0;
+      background: var(--primary);
+      color: rgba(255,255,255,0.96);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: var(--shadow-2);
+    }
+    .home-footer {
+      display: grid;
+      gap: 10px;
+    }
+
+    .seg {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .seg-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: var(--rounded-full);
+      border: 1px solid var(--hairline-strong);
+      background: var(--canvas);
+      font-weight: 600;
+      font-size: 12px;
+      color: rgba(5,0,56,0.92);
+    }
+    .course-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .course-card {
+      border-radius: 18px;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(255,255,255,0.82);
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+    }
+    .course-hero {
+      position: relative;
+      height: 138px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.22));
+      overflow: hidden;
+    }
+    .course-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.05);
+    }
+    .badge-best {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      background: rgba(255, 211, 109, 0.92);
+      color: rgba(17,17,17,0.90);
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .heart {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.72);
+      background: rgba(255,255,255,0.74);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .course-body {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+    .course-title {
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+    .course-sub {
+      font-weight: 800;
+      color: rgba(17,17,17,0.62);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .course-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: rgba(17,17,17,0.62);
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .tag-chip {
+      font-weight: 900;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(47,128,237,0.10);
+      color: rgba(47,128,237,0.92);
+    }
+
+    .saved-course-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(255,255,255,0.82);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+    }
+    .saved-thumb {
+      width: 92px;
+      height: 64px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(255,255,255,0.72);
+      flex: 0 0 auto;
+    }
+    .saved-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .saved-main {
+      flex: 1;
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+    .saved-main .t {
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-size: 13px;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .saved-main .s {
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17,17,17,0.62);
+    }
+    .saved-side {
+      display: grid;
+      justify-items: end;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .saved-cta {
+      border: 0;
+      border-radius: 12px;
+      min-height: 28px;
+      padding: 0 10px;
+      background: rgba(47,128,237,0.10);
+      color: rgba(47,128,237,0.92);
+      font-weight: 900;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .cd-hero {
+      position: relative;
+      height: 154px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(255,255,255,0.5);
+    }
+    .cd-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .tab {
+      min-height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.72);
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .tab.on {
+      background: #fff0c7;
+      border-color: rgba(255, 184, 0, 0.34);
+    }
+    .cd-icons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .cd-ic {
+      border-radius: 14px;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(255,255,255,0.82);
+      padding: 10px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(17,17,17,0.70);
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+      margin-bottom: 10px;
+    }
+    .step {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+      color: rgba(17,17,17,0.62);
+      font-weight: 900;
+      font-size: 11px;
+    }
+    .step .c {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.72);
+    }
+    .step.on { color: rgba(17,17,17,0.86); }
+    .step.on .c { background: #fff0c7; border-color: rgba(255, 184, 0, 0.34); }
+    .field {
+      border-radius: 14px;
+      border: 1px solid rgba(17,17,17,0.08);
+      background: rgba(255,255,255,0.78);
+      padding: 12px;
+    }
+    .field-label { font-weight: 900; font-size: 12px; color: rgba(17,17,17,0.70); }
+    .field-row { margin-top: 8px; display: flex; gap: 10px; align-items: center; }
+    .inp {
+      width: 100%;
+      min-height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.88);
+      padding: 0 12px;
+      font-weight: 900;
+      color: rgba(17,17,17,0.86);
+    }
+    .pay-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .pay-m {
+      border-radius: 14px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.78);
+      min-height: 64px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .pay-m.on {
+      border-color: rgba(255, 184, 0, 0.34);
+      background: #fff0c7;
+    }
+
+    .kw-group-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .kw-group-row::-webkit-scrollbar { display: none; }
+
+    .kw-cloud {
+      position: relative;
+      height: 152px;
+      margin-top: 10px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(47,128,237,0.10), rgba(255,184,0,0.10));
+      border: 1px solid rgba(17,17,17,0.06);
+      overflow: hidden;
+    }
+    .kw-chip {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.78);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17,17,17,0.86);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      user-select: none;
+      transform: translateZ(0);
+      animation: floatY 3.4s ease-in-out infinite;
+    }
+    .kw-chip.on {
+      background: var(--blue-pill);
+      border-color: rgba(47,128,237,0.24);
+    }
+    .kw-chip span {
+      color: rgba(17,17,17,0.54);
+      font-weight: 900;
+      font-size: 11px;
+    }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .kw-selected {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .kw-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .kw-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(17,17,17,0.06);
+      color: rgba(17,17,17,0.82);
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .kw-pill b {
+      font-weight: 900;
+      color: rgba(17,17,17,0.92);
+    }
+    .rec-card { margin-top: 12px; }
+    .rec-title { font-weight: 900; letter-spacing: -0.03em; font-size: 16px; }
+    .rec-sub {
+      margin-top: 4px;
+      font-weight: 800;
+      color: rgba(17,17,17,0.62);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .rec-meta { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta-pill {
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(17,17,17,0.72);
+      background: rgba(255,255,255,0.68);
+      border: 1px solid rgba(17,17,17,0.08);
+    }
+    .rec-timeline { margin-top: 12px; display: grid; gap: 8px; }
+    .rec-line {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17,17,17,0.82);
+    }
+    .rec-line i { color: rgba(17,17,17,0.50); font-style: normal; font-weight: 900; }
+    .rec-actions { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .saved-row {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .saved-row::-webkit-scrollbar { display: none; }
+    .saved-chip {
+      flex: 0 0 auto;
+      display: grid;
+      gap: 6px;
+      width: 120px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(17,17,17,0.08);
+      box-shadow: var(--shadow-soft);
+      padding: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .saved-del {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 10px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.84);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: rgba(17,17,17,0.72);
+      cursor: pointer;
+    }
+    .saved-del:active { transform: translateY(1px); }
+    .saved-img {
+      height: 64px;
+      border-radius: 14px;
+      background-size: cover;
+      background-position: center;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 20px;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 12px 22px rgba(0,0,0,0.22);
+    }
+    .saved-name { font-weight: 900; font-size: 12px; letter-spacing: -0.02em; }
+    .saved-sub { font-weight: 800; font-size: 11px; color: rgba(17,17,17,0.62); }
+
+    .assist-list { margin-top: 10px; display: grid; gap: 8px; }
+    .assist-item {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(17,17,17,0.04);
+      border: 1px solid rgba(17,17,17,0.06);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(17,17,17,0.82);
+      cursor: pointer;
+    }
+    .assist-item .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(17,17,17,0.10);
+      color: rgba(17,17,17,0.60);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .assist-item.done { background: rgba(47,170,93,0.10); border-color: rgba(47,170,93,0.18); }
+    .assist-item.done .dot { background: rgba(241,255,245,0.92); color: #2faa5d; border-color: rgba(47,170,93,0.22); }
+    .assist-item .tag {
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+      font-size: 10px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.76);
+      color: rgba(17,17,17,0.62);
+    }
+
+    .tools-grid { display: grid; gap: 12px; }
+    .map-shell {
+      height: 210px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(47,128,237,0.16), rgba(255,184,0,0.10));
+      border: 1px solid rgba(17,17,17,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .map-pin {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.84);
+      border: 1px solid rgba(17,17,17,0.10);
+      box-shadow: var(--shadow-soft);
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(17,17,17,0.82);
+    }
+    .translator { display: grid; gap: 10px; }
+    .tx-row { display: grid; grid-template-columns: 1fr 24px 1fr; gap: 10px; align-items: center; }
+    .tx-sel {
+      min-height: 38px;
+      border-radius: 14px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.86);
+      padding: 0 10px;
+      font-weight: 900;
+      color: rgba(17,17,17,0.82);
+      outline: none;
+    }
+    .tx-area {
+      width: 100%;
+      min-height: 84px;
+      resize: none;
+      border-radius: 16px;
+      border: 1px solid rgba(17,17,17,0.10);
+      background: rgba(255,255,255,0.86);
+      padding: 10px 12px;
+      font-weight: 900;
+      color: rgba(17,17,17,0.82);
+      outline: none;
+    }
+    .tx-out {
+      min-height: 84px;
+      border-radius: 16px;
+      border: 1px solid rgba(17,17,17,0.06);
+      background: rgba(17,17,17,0.04);
+      padding: 10px 12px;
+      font-weight: 900;
+      color: rgba(17,17,17,0.72);
+      line-height: 1.5;
+    }
+
+    .wallet-grid { display: grid; gap: 12px; }
+    .wallet-row { display: grid; gap: 10px; }
+    .wallet-kv { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+    .wallet-kv b { font-weight: 900; }
+    .wallet-kv span { font-weight: 800; color: rgba(17,17,17,0.62); font-size: 12px; }
+    .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="app-container" aria-label="TRI:P 모바일">
+      <div class="notch" aria-hidden="true"></div>
+      <div class="status-bar" aria-hidden="true">
+        <span>9:41</span>
+        <span>▮▮▮  LTE  🔋</span>
+      </div>
+
+      <div id="screen-splash" class="screen active" aria-label="스플래시">
+        <div class="screen-pad">
+          <div class="screen-scroll" style="display:grid;place-items:center;">
+            <div style="text-align:center;">
+              <div class="brand" style="font-size:30px;">TRI:P</div>
+              <div style="height:10px"></div>
+              <div style="font-weight:900;color:rgba(17,17,17,0.52);letter-spacing:-0.02em;">No planning, Just Tap</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-intro" class="screen" aria-label="국내 해외 선택">
+        <div class="screen-pad" style="padding:0;">
+          <div class="screen-scroll" style="padding:0;overflow:hidden;">
+            <div class="intro-mock" id="intro-mock" aria-label="국내 해외 선택 화면">
+              <img class="intro-mock-img" src="../1.png" alt="어디로 떠나볼까요? 국내 또는 해외를 선택하는 화면" onerror="introMockReady(false)" />
+              <button type="button" class="intro-hotspot hs-domestic" onclick="startApp('domestic')" aria-label="국내 여행 선택"></button>
+              <button type="button" class="intro-hotspot hs-overseas" onclick="startApp('overseas')" aria-label="해외 여행 선택"></button>
+            </div>
+
+            <div class="intro-fallback" id="intro-fallback" style="display:none;">
+              <h1 class="region-title">어디로 떠나볼까요?</h1>
+              <div class="region-desc">
+                국내 또는 해외를 선택하고
+                <br />
+                나에게 맞는 여행을 찾아보세요
+              </div>
+              <div class="region-grid" aria-label="국내 해외 선택">
+                <button type="button" class="region-btn domestic" onclick="startApp('domestic')">
+                  <div class="region-emoji" aria-hidden="true">🇰🇷</div>
+                  <h2 class="region-h2">국내 여행</h2>
+                  <p class="region-copy">우리나라 구석구석<br />감성 여행지 추천</p>
+                </button>
+                <button type="button" class="region-btn overseas" onclick="startApp('overseas')">
+                  <div class="region-emoji" aria-hidden="true">🌍</div>
+                  <h2 class="region-h2">해외 여행</h2>
+                  <p class="region-copy">설렘 가득한<br />해외 여행 코스 추천</p>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-home" class="screen" aria-label="홈">
+        <div class="screen-pad" style="display:grid;grid-template-rows:1fr auto;gap:12px;">
+          <div class="screen-scroll">
+            <div class="sin">
+              <div class="h-top">
+                <div class="h-title">TRI:P</div>
+                <div class="h-icons">
+                  <div class="h-btn" onclick="nav('search')" title="검색"><i class="ti ti-search" style="font-size:18px;color:var(--t2)"></i></div>
+                  <div class="h-btn" title="알림"><i class="ti ti-bell" style="font-size:18px;color:var(--t2)"></i></div>
+                </div>
+              </div>
+
+              <div class="card theme-hero">
+                <div class="theme-hero-pad">
+                  <div>
+                    <div class="theme-hero-title">어떤 여행을<br />꿈꾸고 계신가요?</div>
+                    <div class="theme-hero-desc">키워드를 선택하면<br />나만의 여행코스를 추천해드려요</div>
+                  </div>
+                  <div class="theme-hero-ill" aria-hidden="true">🧳</div>
+                </div>
+              </div>
+
+              <div class="theme-chip-grid" id="theme-chips" aria-label="키워드 선택"></div>
+
+              <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <div class="kw-selected" id="kw-selected" aria-label="선택된 키워드"></div>
+                <button type="button" class="btn-mini btn-icon" onclick="resetKeywords()" aria-label="키워드 리셋" title="리셋">↺</button>
+              </div>
+
+              <div style="margin-top:12px;font-weight:900;letter-spacing:-0.02em;">저장한 여행지</div>
+              <div class="saved-row" id="saved-places" aria-label="저장한 여행지 목록"></div>
+
+              <div style="margin-top:14px;font-weight:900;letter-spacing:-0.02em;">일정 어시스트</div>
+              <div class="card">
+                <div class="card-pad">
+                  <div class="wallet-kv"><b id="assist-title">방문 예정 코스</b><span id="assist-status">준비 0 / 0</span></div>
+                  <div class="assist-list" id="assist-list" aria-label="준비 체크리스트"></div>
+                </div>
+              </div>
+
+              <div class="info-box" aria-label="홈 항목 안내">
+                <div class="info-title">홈</div>
+                <div class="info-line">P 성향자에게는 ‘지금 내 기분과 현재 상황’이 여행 계획에 큰 영향을 줘요. 검색창 대신 유기적으로 움직이는 키워드를 배치해요.</div>
+                <div class="info-line">저장한 여행지: 추천으로 알게 된 여행지 중 마음에 든 곳을 저장하고 다시 확인할 수 있어요.</div>
+                <div class="info-line">일정: 준비된 내용/준비되지 않은 내용을 나눠 보여주고, 여행 대비를 어시스트해줘요.</div>
+              </div>
+
+              <div style="height:12px"></div>
+            </div>
+          </div>
+          <div class="home-footer">
+            <button type="button" class="theme-cta" onclick="goCourses()">✨ 여행코스 추천받기</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-courses" class="screen" aria-label="추천 여행코스">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('home')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">추천 여행코스</div>
+              <button type="button" class="icon-btn" onclick="navigate('saved')" aria-label="저장한 코스">
+                <span class="icon">❤</span>
+              </button>
+            </div>
+            <div class="small muted" style="margin-top:6px;font-weight:900;">선택한 키워드로 추천했어요!</div>
+            <div class="seg" id="course-selected" aria-label="선택 키워드"></div>
+            <div class="course-list" id="course-list" aria-label="추천 코스 목록"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-course-detail" class="screen" aria-label="코스 상세">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('courses')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">코스 상세</div>
+              <button type="button" class="icon-btn" onclick="shareCourse()" aria-label="공유">
+                <span class="icon">⤴</span>
+              </button>
+            </div>
+
+            <div style="margin-top:10px;" id="cd-content" aria-label="코스 상세 내용"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-saved" class="screen" aria-label="내가 저장한 코스">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('home')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">내가 저장한 코스</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <button type="button" class="btn-mini" id="saved-tab-saved" onclick="setSavedTab('saved')">저장된 코스</button>
+              <button type="button" class="btn-mini" id="saved-tab-recent" onclick="setSavedTab('recent')">최근 본 코스</button>
+            </div>
+            <div class="course-list" id="saved-list" style="margin-top:12px;" aria-label="저장 코스 목록"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-booking" class="screen" aria-label="예약하기">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('saved')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">예약하기</div>
+              <div style="width:40px;"></div>
+            </div>
+
+            <div class="stepper" aria-label="예약 단계">
+              <div class="step on"><div class="c">1</div><div>일정/인원</div></div>
+              <div class="step"><div class="c">2</div><div>숙소 선택</div></div>
+              <div class="step"><div class="c">3</div><div>교통 선택</div></div>
+              <div class="step"><div class="c">4</div><div>결제</div></div>
+            </div>
+
+            <div id="booking-content" style="display:grid;gap:12px;"></div>
+            <button type="button" class="theme-cta" style="margin-top:14px;" onclick="goLodging()">숙소 선택하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-lodging" class="screen" aria-label="숙소 선택">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('booking')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">숙소 선택</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div class="seg" aria-label="숙소 필터">
+              <div class="seg-pill">추천순</div>
+              <div class="seg-pill">가성비 낮은순</div>
+              <div class="seg-pill">평점 높은순</div>
+              <div class="seg-pill">필터</div>
+            </div>
+            <div class="course-list" id="lodging-list" aria-label="숙소 목록"></div>
+            <button type="button" class="theme-cta" style="margin-top:14px;" onclick="goTransport()">교통 선택하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-transport" class="screen" aria-label="교통 선택">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('lodging')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">교통 선택</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
+              <button type="button" class="tab on" id="tr-tab-flight" onclick="setTransportType('flight')">항공</button>
+              <button type="button" class="tab" id="tr-tab-car" onclick="setTransportType('car')">렌터카</button>
+              <button type="button" class="tab" id="tr-tab-bus" onclick="setTransportType('bus')">버스/페리</button>
+              <button type="button" class="tab" id="tr-tab-train" onclick="setTransportType('train')">기차</button>
+            </div>
+            <div id="transport-content" style="margin-top:12px;display:grid;gap:12px;"></div>
+            <button type="button" class="theme-cta" style="margin-top:14px;" onclick="goPayment()">결제하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-payment" class="screen" aria-label="결제하기">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <button type="button" class="icon-btn" onclick="navigate('transport')" aria-label="뒤로">
+                <span class="icon">←</span>
+              </button>
+              <div class="page-title">결제하기</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div class="card" style="margin-top:12px;">
+              <div class="card-pad">
+                <div style="font-weight:900;letter-spacing:-0.02em;">결제 수단 선택</div>
+                <div class="pay-grid" id="pay-methods" aria-label="결제 수단"></div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px;">
+              <div class="card-pad">
+                <div style="font-weight:900;letter-spacing:-0.02em;">결제 금액</div>
+                <div style="height:10px"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <div class="small muted" style="font-weight:900;">총 결제 금액</div>
+                  <div style="font-weight:900;font-size:18px;letter-spacing:-0.02em;" id="pay-total">0원</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+              <input type="checkbox" id="pay-agree" checked />
+              <label for="pay-agree" style="font-weight:900;color:rgba(17,17,17,0.70);">결제 진행 시 개인정보 제공 및 결제에 동의합니다.</label>
+            </div>
+            <button type="button" class="theme-cta" style="margin-top:14px;" onclick="completePayment()"><span id="pay-cta">0원 결제하기</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-tools" class="screen" aria-label="여행 도구">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <div class="page-title">여행 도구</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div class="tools-grid">
+              <div class="card">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">지도</div>
+                  <div style="margin-top:4px" class="small muted">방문 예정 여행지 주변 + 예약 내역이 자동으로 뜨는 구조</div>
+                  <div style="height:10px"></div>
+                  <div class="map-shell" aria-label="지도 미리보기">
+                    <div class="map-pin" style="left:14px;top:14px;" id="map-dest">📍 목적지</div>
+                    <div class="map-pin" style="right:14px;top:58px;" id="map-resv-1">🏨 숙소</div>
+                    <div class="map-pin" style="left:18px;bottom:18px;" id="map-resv-2">✈ 항공</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">번역기</div>
+                  <div style="margin-top:4px" class="small muted">여러 앱을 켜지 않아도 TRI:P 안에서 바로 확인</div>
+                  <div style="height:10px"></div>
+                  <div class="translator">
+                    <div class="tx-row" aria-label="언어 선택">
+                      <select class="tx-sel" id="tx-from">
+                        <option value="ko">한국어</option>
+                        <option value="en">영어</option>
+                        <option value="ja">일본어</option>
+                        <option value="zh">중국어</option>
+                      </select>
+                      <div style="text-align:center;color:rgba(17,17,17,0.42);font-weight:900;">→</div>
+                      <select class="tx-sel" id="tx-to">
+                        <option value="en">영어</option>
+                        <option value="ja">일본어</option>
+                        <option value="zh">중국어</option>
+                        <option value="ko">한국어</option>
+                      </select>
+                    </div>
+                    <textarea class="tx-area" id="tx-in" placeholder="문장을 입력하세요"></textarea>
+                    <div class="tx-out" id="tx-out" aria-label="번역 결과">번역 결과가 여기에 표시됩니다.</div>
+                    <div class="wallet-actions">
+                      <button type="button" class="btn-ghost" onclick="clearTranslate()">지우기</button>
+                      <button type="button" class="btn-primary" onclick="runTranslate()">번역하기</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="info-box" aria-label="여행 도구 항목 안내">
+              <div class="info-title">여행 도구</div>
+              <div class="info-line">지도: 접속 시 바로 방문 예정 여행지 주변 지도를 보고, 예약 내역이 자동으로 지도 위에 뜨도록 연동돼요.</div>
+              <div class="info-line">번역기: 여러 앱을 교차하지 않고 TRI:P 내에서 정보 확인이 가능해요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-wallet" class="screen" aria-label="월렛">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <div class="page-title">월렛</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div class="wallet-grid">
+              <div class="card">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">환전</div>
+                  <div style="margin-top:4px" class="small muted">환율 확인 + 앱 내 환전 신청</div>
+                  <div style="height:10px"></div>
+                  <div class="wallet-row">
+                    <div class="wallet-kv"><b id="fx-pair">KRW → USD</b><span id="fx-rate">1 USD = 1,360 KRW</span></div>
+                    <div class="wallet-actions">
+                      <button type="button" class="btn-ghost" onclick="changeFx()">통화 바꾸기</button>
+                      <button type="button" class="btn-primary" onclick="requestFx()">환전 신청</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">포인트</div>
+                  <div style="margin-top:4px" class="small muted">숙박/항공 등 결제를 원터치로 예약</div>
+                  <div style="height:10px"></div>
+                  <div class="wallet-kv"><b id="pt-balance">보유 포인트 120,000P</b><span>인앱 결제</span></div>
+                  <div style="height:10px"></div>
+                  <div class="wallet-actions">
+                    <button type="button" class="btn-ghost" onclick="topUpPoints()">충전</button>
+                    <button type="button" class="btn-primary" onclick="payWithPoints()">포인트 결제</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">예약</div>
+                  <div style="margin-top:4px" class="small muted">숙소/항공 예약 및 예약 확인</div>
+                  <div style="height:10px"></div>
+                  <div id="resv-list" style="display:grid;gap:8px;"></div>
+                  <div style="height:10px"></div>
+                  <button type="button" class="btn-primary" onclick="addReservation()">예약 추가</button>
+                </div>
+              </div>
+            </div>
+            <div class="info-box" aria-label="월렛 항목 안내">
+              <div class="info-title">월렛</div>
+              <div class="info-line">환전: 방문 예정 여행지 환율 확인이 가능하고, 앱 내 환전 신청이 가능해요.</div>
+              <div class="info-line">포인트: 미리 충전해두면 숙박/항공 등 결제 항목을 원터치로 예약할 수 있어요.</div>
+              <div class="info-line">예약: 숙소, 항공 등 예약 및 예약 확인이 가능해요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-profile" class="screen" aria-label="프로필">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <div class="page-title">프로필</div>
+              <button type="button" class="icon-btn" aria-label="설정">
+                <span class="icon">⚙</span>
+              </button>
+            </div>
+            <div class="profile-header">
+              <div class="profile-img" aria-hidden="true"></div>
+              <div class="profile-name">박소현</div>
+              <div class="profile-tags">
+                <div class="ptag">강릉 마스터</div>
+                <div class="ptag yellow">사진작가</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;font-weight:900;letter-spacing:-0.02em;">내 여행 경로</div>
+            <div class="card" style="margin-top:10px;">
+              <div class="card-pad">
+                <div class="wallet-kv"><b id="profile-summary">저장 0 · 예약 0</b><span>한 번에 확인</span></div>
+                <div style="height:10px"></div>
+                <div id="profile-saved" style="display:grid;gap:8px;"></div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;font-weight:900;letter-spacing:-0.02em;">개인정보</div>
+            <div class="card" style="margin-top:10px;">
+              <div class="card-pad" style="display:grid;gap:10px;">
+                <div class="assist-item"><div class="dot">•</div><div>닉네임 / MBTI / 여행 타입</div><div class="tag">설정</div></div>
+                <div class="assist-item"><div class="dot">•</div><div>프로필 사진</div><div class="tag">변경</div></div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;font-weight:900;letter-spacing:-0.02em;">앱 환경설정</div>
+            <div class="card" style="margin-top:10px;">
+              <div class="card-pad" style="display:grid;gap:10px;">
+                <div class="assist-item"><div class="dot">•</div><div>이메일 연동</div><div class="tag">연결</div></div>
+                <div class="assist-item"><div class="dot">•</div><div>비밀번호</div><div class="tag">변경</div></div>
+                <div class="assist-item"><div class="dot">•</div><div>알림 설정</div><div class="tag">관리</div></div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;font-weight:900;letter-spacing:-0.02em;">크롤링 데이터</div>
+            <div class="card" style="margin-top:10px;">
+              <div class="card-pad" style="display:grid;gap:10px;">
+                <div class="assist-item" onclick="openCrawlPicker()"><div class="dot">⬆</div><div>crawl_preset.json / blog.text.txt 업로드</div><div class="tag">가져오기</div></div>
+                <div class="assist-item" onclick="resetCrawlData()"><div class="dot">↺</div><div>크롤링 데이터 초기화</div><div class="tag">리셋</div></div>
+                <div class="small muted" id="crawl-status">상태: 미업로드</div>
+                <div class="small muted" id="crawl-stats"></div>
+              </div>
+            </div>
+            <div class="info-box" aria-label="프로필 기능 안내">
+              <div class="info-title">프로필</div>
+              <div class="info-line">내 여행 경로 확인: 저장한 여행과 예약 내역을 한 번에 확인할 수 있어요.</div>
+              <div class="info-line">개인정보: 사진, 닉네임, MBTI, 원하는 여행 타입 등을 설정할 수 있어요.</div>
+              <div class="info-line">앱 환경설정: 이메일 연동, 비밀번호, 알림 설정 등을 관리할 수 있어요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-community" class="screen" aria-label="커뮤니티">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <div class="page-title">커뮤니티</div>
+              <div style="width:40px;"></div>
+            </div>
+            <div class="community-grid" aria-label="후기 카드">
+              <div class="post-card">
+                <div class="post-img" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="post-info">
+                  <div>
+                    <div class="post-title">제주도 협재해변</div>
+                    <div class="post-likes">152 likes</div>
+                  </div>
+                  <span style="color:#ff3b30; font-size:14px; font-weight:900;">♥</span>
+                </div>
+              </div>
+              <div class="post-card">
+                <div class="post-img" style="background-image:url('https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="post-info">
+                  <div>
+                    <div class="post-title">경주 불국사</div>
+                    <div class="post-likes">98 likes</div>
+                  </div>
+                  <span style="color:#c7c7cc; font-size:14px; font-weight:900;">♡</span>
+                </div>
+              </div>
+              <div class="post-card">
+                <div class="post-img" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="post-info">
+                  <div>
+                    <div class="post-title">경주 첨성대</div>
+                    <div class="post-likes">98 likes</div>
+                  </div>
+                  <span style="color:#c7c7cc; font-size:14px; font-weight:900;">♡</span>
+                </div>
+              </div>
+              <div class="post-card">
+                <div class="post-img" style="background-image:url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80');"></div>
+                <div class="post-info">
+                  <div>
+                    <div class="post-title">제주 오름</div>
+                    <div class="post-likes">38 likes</div>
+                  </div>
+                  <span style="color:#ff3b30; font-size:14px; font-weight:900;">♥</span>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px;" aria-label="클릭형 후기">
+              <div class="card-pad">
+                <div style="font-weight:900;letter-spacing:-0.02em;">클릭형 후기 남기기</div>
+                <div style="margin-top:6px" class="small muted">작성 대신 버튼 한 번으로 신뢰도 높은 후기를 쌓아요.</div>
+                <div style="height:10px"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                  <button type="button" class="btn-ghost" style="min-height:38px;" onclick="quickReview('좋았어요')">👍 좋았어요</button>
+                  <button type="button" class="btn-ghost" style="min-height:38px;" onclick="quickReview('도움돼요')">✅ 도움돼요</button>
+                  <button type="button" class="btn-ghost" style="min-height:38px;" onclick="quickReview('예약팁')">💡 예약팁</button>
+                </div>
+                <div style="height:10px"></div>
+                <div id="quick-review-status" class="small muted">최근 선택: -</div>
+              </div>
+            </div>
+            <div class="info-box" aria-label="커뮤니티 기능 안내">
+              <div class="info-title">여행 후기</div>
+              <div class="info-line">광고 없는 신뢰성 있는 후기를 제공해요. 귀찮은 P들을 위해 ‘작성’이 아니라 ‘클릭형’으로도 후기를 남길 수 있어요.</div>
+              <div class="info-line">해당 여행지의 준비물, 예약 경험, 실제 리뷰를 함께 확인할 수 있어요.</div>
+            </div>
+          </div>
+        </div>
+        <button class="fab" onclick="alert('새 게시물 작성 기능')">+</button>
+      </div>
+
+      <div id="screen-search" class="screen" aria-label="검색">
+        <div class="screen-pad">
+          <div class="screen-scroll">
+            <div class="top-row">
+              <div class="page-title">검색</div>
+              <button type="button" class="icon-btn" onclick="navigate('home')" aria-label="닫기">
+                <span class="icon">×</span>
+              </button>
+            </div>
+            <div class="search-bar">
+              <span style="color:#8e8e93; font-size:18px;">🔍</span>
+              <input type="text" id="searchInput" placeholder="어디로 갈까요?" />
+            </div>
+            <div class="search-white-box">
+              <div style="font-size:14px; font-weight:900; color:#8e8e93; margin-bottom:10px;">인기 검색</div>
+              <div class="search-tags">
+                <div class="stag">제주도</div>
+                <div class="stag">속초</div>
+                <div class="stag">여수</div>
+              </div>
+            </div>
+            <div class="search-white-box">
+              <div style="font-size:14px; font-weight:900; color:#8e8e93; margin-bottom:10px;">최근 검색</div>
+              <ul id="recentSearch" style="margin:0;padding-left:18px;display:grid;gap:8px;font-weight:900;color:rgba(17,17,17,0.62);font-size:13px;line-height:1.4;">
+                <li>어디로 갈까요?</li>
+                <li>카페 거리에서 커피</li>
+                <li>시장 구경</li>
+                <li>부산 여행</li>
+              </ul>
+            </div>
+            <div class="info-box" aria-label="검색 역할 안내">
+              <div class="info-title">검색</div>
+              <div class="info-line">검색은 보조 기능이에요. 메인 홈에서 키워드를 고르면 TRI:P가 먼저 코스를 제안해요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="bottom-nav" id="bottom-nav" aria-label="하단 탭" style="display:none;">
+        <button type="button" class="nav-item active" id="nav-home" onclick="navigate('home', this)">
+          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+          <span>홈</span>
+        </button>
+        <button type="button" class="nav-item" id="nav-community" onclick="navigate('community', this)">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></svg>
+          <span>커뮤니티</span>
+        </button>
+        <button type="button" class="nav-item" id="nav-tools" onclick="navigate('tools', this)">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"></path></svg>
+          <span>도구</span>
+        </button>
+        <button type="button" class="nav-item" id="nav-wallet" onclick="navigate('wallet', this)">
+          <svg viewBox="0 0 24 24"><path d="M21 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 12H3V9h18v10zm-3-5h-5v-2h5v2z"></path></svg>
+          <span>월렛</span>
+        </button>
+        <button type="button" class="nav-item" id="nav-profile" onclick="navigate('profile', this)">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+          <span>프로필</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <input type="file" id="crawl-file" accept=".txt,.json,text/plain,application/json" style="display:none;" />
+
+  <script type="application/json" id="crawl-preset">
+{
+  "byKeyword": {
+    "스트레스": [
+      { "city": "대구", "spots": ["앞산 전망대", "수성못 산책로", "비슬산 자연휴양림"] },
+      { "city": "대전", "spots": ["장태산 자연휴양림", "계족산 황톳길", "한밭수목원"] },
+      { "city": "전주", "spots": ["전주천 산책길", "덕진공원", "아중호수"] },
+      { "city": "여수", "spots": ["오동도 산책길", "돌산공원", "향일암"] },
+      { "city": "속초", "spots": ["영랑호"] },
+      { "city": "강릉", "spots": ["안목해변"] },
+      { "city": "동해", "spots": ["묵호항 논골담길"] },
+      { "city": "경주", "spots": ["보문호 산책길", "불국사", "동궁과 월지"] },
+      { "city": "담양", "spots": ["죽녹원", "메타세쿼이아길", "관방제림"] },
+      { "city": "포천", "spots": ["산정호수", "비둘기낭폭포", "허브아일랜드"] },
+      { "city": "가평", "spots": ["아침고요수목원", "자라섬", "유명산 자연휴양림"] }
+    ],
+    "활력": [
+      { "city": "대구", "spots": ["이월드", "동성로 클럽거리", "대구스타디움 스포츠 체험존"] },
+      { "city": "대전", "spots": ["오월드", "한화생명 이글스파크", "엑스포과학공원"] },
+      { "city": "전주", "spots": ["남부시장 야시장", "한옥마을 한복체험", "레일바이크 체험"] },
+      { "city": "여수", "spots": ["여수해상케이블카", "아쿠아플라넷 여수", "요트투어"] },
+      { "city": "양양", "spots": ["양양 서핑비치"] },
+      { "city": "강릉", "spots": ["강릉 ATV 체험"] },
+      { "city": "속초", "spots": ["속초 해양레포츠"] },
+      { "city": "경주", "spots": ["경주월드", "캘리포니아비치", "루지월드 경주"] },
+      { "city": "담양", "spots": ["메타프로방스", "담양 레저파크", "자전거 라이딩"] },
+      { "city": "포천", "spots": ["포천 루지", "아트밸리 체험", "한탄강 하늘다리"] },
+      { "city": "가평", "spots": ["빠지 수상레저", "레일바이크", "남이섬 액티비티"] }
+    ],
+    "감성": [
+      { "city": "대구", "spots": ["김광석 다시그리기길", "계산성당", "근대골목 투어"] },
+      { "city": "대전", "spots": ["소제동 카페거리", "대전예술의전당", "대동하늘공원"] },
+      { "city": "전주", "spots": ["전주한옥마을", "자만벽화마을", "경기전 돌담길"] },
+      { "city": "여수", "spots": ["여수 밤바다", "고소동 벽화마을", "낭만포차 거리"] },
+      { "city": "강릉", "spots": ["안목 커피거리", "주문진 방파제"] },
+      { "city": "동해", "spots": ["묵호 논골담길"] },
+      { "city": "경주", "spots": ["황리단길", "첨성대 야경", "교촌한옥마을"] },
+      { "city": "담양", "spots": ["죽녹원 대나무숲", "메타세쿼이아길", "소쇄원"] },
+      { "city": "포천", "spots": ["포천 아트밸리", "허브아일랜드 야경", "산정호수 둘레길"] },
+      { "city": "가평", "spots": ["남이섬 메타세쿼이아길", "쁘띠프랑스", "에델바이스 스위스마을"] }
+    ],
+    "도피": [
+      { "city": "대구", "spots": ["팔공산 케이블카", "가창 카페거리", "군위 화산산성 전망대"] },
+      { "city": "대전", "spots": ["대청호 오백리길", "장태산 메타세쿼이아길", "유성온천 거리"] },
+      { "city": "전주", "spots": ["오목대 전망대", "전동성당", "한벽당"] },
+      { "city": "여수", "spots": ["금오도 비렁길", "향일암 일출", "백야도 드라이브"] },
+      { "city": "속초", "spots": ["설악산 케이블카"] },
+      { "city": "강릉", "spots": ["정동진 바다열차"] },
+      { "city": "삼척", "spots": ["삼척 해안도로 드라이브"] },
+      { "city": "경주", "spots": ["감포 바다 드라이브", "양남 주상절리", "문무대왕릉"] },
+      { "city": "담양", "spots": ["담양호 드라이브", "가마골 생태공원", "창평 슬로시티"] },
+      { "city": "포천", "spots": ["백운계곡", "국립수목원", "한탄강 주상절리길"] },
+      { "city": "가평", "spots": ["청평호 드라이브", "호명호수", "잣향기푸른숲"] }
+    ],
+    "비 오는데": [
+      { "city": "대구", "spots": ["대구미술관", "국립대구박물관", "스파밸리 실내존"] },
+      { "city": "대전", "spots": ["국립중앙과학관", "신세계 Art & Science", "성심당 본점"] },
+      { "city": "전주", "spots": ["전주한옥마을 찻집", "국립무형유산원", "영화의거리"] },
+      { "city": "여수", "spots": ["아쿠아플라넷 여수", "여수예술랜드", "카페 라피끄"] },
+      { "city": "강릉", "spots": ["테라로사 커피공장", "아르떼뮤지엄 강릉"] },
+      { "city": "속초", "spots": ["속초 관광수산시장"] },
+      { "city": "경주", "spots": ["국립경주박물관", "황리단길 카페", "동궁원"] },
+      { "city": "담양", "spots": ["죽녹원 대나무길", "전통찻집", "담빛예술창고"] },
+      { "city": "포천", "spots": ["허브아일랜드 실내존", "포천아트밸리 천문과학관", "카페 숨"] },
+      { "city": "가평", "spots": ["쁘띠프랑스", "이탈리아마을 피노키오와 다빈치", "감성카페"] }
+    ],
+    "바람": [
+      { "city": "대구", "spots": ["앞산 해넘이전망대", "팔공산 동화사", "금호강 디아크"] },
+      { "city": "대전", "spots": ["대청호 전망대", "계족산성", "엑스포다리"] },
+      { "city": "전주", "spots": ["오목대 전망대", "전주천 자전거길", "덕진공원 연못길"] },
+      { "city": "여수", "spots": ["돌산대교", "오동도", "여수해양공원"] },
+      { "city": "강릉", "spots": ["주문진 해변", "정동진 해변"] },
+      { "city": "동해", "spots": ["묵호등대"] },
+      { "city": "경주", "spots": ["보문호 자전거길", "감포 해안도로", "첨성대 들판"] },
+      { "city": "담양", "spots": ["메타세쿼이아길", "담양호 전망대", "관방제림"] },
+      { "city": "포천", "spots": ["산정호수", "한탄강 하늘다리", "억새밭"] },
+      { "city": "가평", "spots": ["자라섬 캠핑장", "청평호", "호명호수"] }
+    ],
+    "더위": [
+      { "city": "대구", "spots": ["스파밸리 워터파크", "아양기찻길 야경 산책", "대구수목원"] },
+      { "city": "대전", "spots": ["유성온천 족욕체험장", "한밭수목원", "오월드 워터존"] },
+      { "city": "전주", "spots": ["전주동물원 숲길", "한옥마을 전통찻집", "아중호수 카페"] },
+      { "city": "여수", "spots": ["오동도 숲길", "아쿠아플라넷 여수", "해양레일바이크 저녁타임"] },
+      { "city": "속초", "spots": ["설악워터피아"] },
+      { "city": "강릉", "spots": ["경포호 숲길"] },
+      { "city": "동해", "spots": ["동해 무릉계곡"] },
+      { "city": "경주", "spots": ["캘리포니아비치", "동궁원 버드파크", "보문단지 숲길"] },
+      { "city": "담양", "spots": ["죽녹원 숲길", "가마골 계곡", "소쇄원"] },
+      { "city": "포천", "spots": ["백운계곡", "비둘기낭폭포", "포천 더설렘 글램핑 수영장"] },
+      { "city": "가평", "spots": ["유명산 계곡", "수상레저 빠지", "잣향기푸른숲"] }
+    ],
+    "흐린 날": [
+      { "city": "대구", "spots": ["근대문화골목", "서문시장 먹거리 투어", "대구예술발전소"] },
+      { "city": "대전", "spots": ["소제동 카페거리", "대전시립미술관", "중앙시장 먹거리 투어"] },
+      { "city": "전주", "spots": ["경기전", "전동성당", "남부시장"] },
+      { "city": "여수", "spots": ["낭만포차 거리", "고소동 벽화마을", "여수수산시장"] },
+      { "city": "강릉", "spots": ["안목 커피거리"] },
+      { "city": "동해", "spots": ["묵호 논골담길"] },
+      { "city": "속초", "spots": ["속초시장 먹거리 투어"] },
+      { "city": "경주", "spots": ["황리단길", "대릉원", "교촌마을"] },
+      { "city": "담양", "spots": ["메타프로방스", "담양 카페거리", "슬로시티 창평"] },
+      { "city": "포천", "spots": ["포천아트밸리", "허브아일랜드", "감성카페"] },
+      { "city": "가평", "spots": ["남이섬", "카페거리", "쁘띠프랑스"] }
+    ],
+    "해 질 때": [
+      { "city": "대구", "spots": ["앞산 카페거리", "수성못 호수 야경", "디아크 전망대"] },
+      { "city": "대전", "spots": ["대동하늘공원", "갑천변 산책길", "대청호 노을정원"] },
+      { "city": "전주", "spots": ["오목대", "전주천변", "덕진공원"] },
+      { "city": "여수", "spots": ["돌산공원 전망대", "여수해상케이블카", "소호동동다리"] },
+      { "city": "강릉", "spots": ["정동진", "경포해변"] },
+      { "city": "동해", "spots": ["묵호등대 전망대"] },
+      { "city": "경주", "spots": ["동궁과 월지", "보문호", "첨성대"] },
+      { "city": "담양", "spots": ["담양호", "메타세쿼이아길", "관방제림"] },
+      { "city": "포천", "spots": ["산정호수", "포천아트밸리", "한탄강 전망대"] },
+      { "city": "가평", "spots": ["청평호", "자라섬", "남이섬 강변길"] }
+    ],
+    "야경": [
+      { "city": "대구", "spots": ["수성못 호수 야경", "아양기찻길 야경 산책", "동성로 루프탑 카페"] },
+      { "city": "대전", "spots": ["대동하늘공원 야경", "엑스포다리"] },
+      { "city": "전주", "spots": ["오목대 야경", "한옥마을 야간 산책"] },
+      { "city": "여수", "spots": ["여수 밤바다", "돌산대교", "케이블카 야간 탑승"] },
+      { "city": "동해", "spots": ["묵호등대 야경"] },
+      { "city": "경주", "spots": ["첨성대 야경", "동궁과 월지 야경"] },
+      { "city": "담양", "spots": ["죽녹원 야간산책"] },
+      { "city": "포천", "spots": ["허브아일랜드 야경"] },
+      { "city": "가평", "spots": ["아침고요수목원 오색별빛정원전"] }
+    ],
+    "눈 오는 날": [
+      { "city": "대구", "spots": ["팔공산 동화사 설경", "비슬산 참꽃군락지 눈꽃", "앞산 전망대"] },
+      { "city": "대전", "spots": ["계족산 황톳길 설경", "장태산 자연휴양림", "유성온천 거리"] },
+      { "city": "전주", "spots": ["전주한옥마을 설경", "경기전 눈길", "전동성당"] },
+      { "city": "여수", "spots": ["향일암", "오동도", "돌산대교 야경"] },
+      { "city": "속초", "spots": ["설악산 국립공원"] },
+      { "city": "평창", "spots": ["대관령 양떼목장"] },
+      { "city": "강릉", "spots": ["정동진 설경"] },
+      { "city": "경주", "spots": ["불국사 설경", "한옥마을 눈길", "첨성대"] },
+      { "city": "담양", "spots": ["죽녹원 설경", "메타세쿼이아길", "소쇄원"] },
+      { "city": "포천", "spots": ["산정호수 설경", "허브아일랜드 불빛동화축제", "백운계곡"] },
+      { "city": "가평", "spots": ["아침고요수목원 오색별빛정원전", "남이섬 설경", "호명호수"] }
+    ],
+    "음식": [
+      { "city": "대구", "spots": ["왕거미식당 (뭉티기 맛집)", "안지랑곱창골목 (막창)", "서문시장 야시장", "대구 떡볶이 페스티벌 행사장", "중앙떡볶이"] },
+      { "city": "대전", "spots": ["성심당 본점", "태평소국밥", "중앙시장 칼국수골목"] },
+      { "city": "전주", "spots": ["베테랑칼국수", "전주비빔밥 거리", "남부시장 청년몰"] },
+      { "city": "여수", "spots": ["황소식당 (게장백반 맛집)", "두꺼비게장", "여수수산시장", "돌문어삼합 거리", "낭만포차 해산물"] },
+      { "city": "속초", "spots": ["속초 관광수산시장 ‘만석부두’ 오징어순대", "만석닭강정 중앙시장점"] },
+      { "city": "강릉", "spots": ["동화가든 초당순두부짬뽕", "주문진 대게타운 ‘대영유통’", "보사노바 커피로스터스 강릉점 (초당옥수수커피)"] },
+      { "city": "경주", "spots": ["교리김밥", "황남빵 본점", "보문단지 한정식거리"] },
+      { "city": "담양", "spots": ["담양 떡갈비 거리", "죽순요리 전문점", "국수거리"] },
+      { "city": "포천", "spots": ["이동갈비 거리", "막걸리 체험장", "포천 한정식"] },
+      { "city": "가평", "spots": ["닭갈비 거리", "잣 아이스크림", "막국수 맛집"] }
+    ],
+    "감성/사진": [
+      { "city": "대구", "spots": ["김광석 거리", "계산예가", "동성로 루프탑 카페"] },
+      { "city": "대전", "spots": ["소제동 카페거리", "대동하늘공원", "테미오래"] },
+      { "city": "전주", "spots": ["전주한옥마을", "자만벽화마을", "경기전"] },
+      { "city": "여수", "spots": ["여수 밤바다", "여수해상케이블카", "고소동 벽화마을"] },
+      { "city": "강릉", "spots": ["안목 커피거리", "주문진 BTS 버스정류장"] },
+      { "city": "동해", "spots": ["묵호 논골담길"] },
+      { "city": "경주", "spots": ["황리단길", "황남동 경리단길 감성카페", "첨성대 핑크뮬리", "대릉원 돌담길"] },
+      { "city": "담양", "spots": ["죽녹원", "메타세쿼이아길", "메타프로방스"] },
+      { "city": "포천", "spots": ["포천아트밸리", "허브아일랜드", "산정호수"] },
+      { "city": "가평", "spots": ["남이섬", "쁘띠프랑스", "아침고요수목원"] }
+    ],
+    "활동": [
+      { "city": "대구", "spots": ["이월드 83타워", "대구FC 홈경기 관람", "스파밸리"] },
+      { "city": "대전", "spots": ["오월드", "엑스포과학공원 VR체험", "한밭야구장 경기 관람"] },
+      { "city": "전주", "spots": ["한복대여 체험", "전주 레일바이크", "전통주 체험관"] },
+      { "city": "여수", "spots": ["해상케이블카", "요트투어", "해양레일바이크"] },
+      { "city": "양양", "spots": ["양양 서핑"] },
+      { "city": "속초", "spots": ["설악산 케이블카"] },
+      { "city": "동해", "spots": ["동해 레일바이크"] },
+      { "city": "경주", "spots": ["경주월드", "캘리포니아비치", "루지월드"] },
+      { "city": "담양", "spots": ["자전거 투어", "담양 레일바이크", "카누 체험"] },
+      { "city": "포천", "spots": ["루지 체험", "한탄강 하늘다리", "ATV 체험"] },
+      { "city": "가평", "spots": ["빠지 수상레저", "레일바이크", "짚라인"] }
+    ],
+    "휴식": [
+      { "city": "대구", "spots": ["앞산 라한셀렉트 경주 한옥스테이", "팔공산 펜션", "수성호텔 온천"] },
+      { "city": "대전", "spots": ["호텔 인터시티 유성", "인터시티호텔 스파", "대청호 펜션"] },
+      { "city": "전주", "spots": ["라한셀렉트 경주 한옥스테이", "경기전 근처 감성숙소", "아중호수 펜션"] },
+      { "city": "여수", "spots": ["라테라스 리조트 여수", "돌산 리조트", "바다뷰 감성숙소"] },
+      { "city": "강릉", "spots": ["썬크루즈 리조트 & 요트", "비치크루즈", "세인트존스 호텔 강릉"] },
+      { "city": "속초", "spots": ["소노펠리체 델피노"] },
+      { "city": "경주", "spots": ["라한셀렉트 경주 한옥스테이", "보문단지 리조트", "감성 풀빌라"] },
+      { "city": "담양", "spots": ["죽녹원 라한셀렉트 경주 한옥스테이", "대나무숲 감성숙소", "담양 풀빌라"] },
+      { "city": "포천", "spots": ["포천 더설렘 글램핑", "산정호수 카라반", "감성 풀빌라"] },
+      { "city": "가평", "spots": ["가평 까사32 풀빌라", "숲속 펜션", "포천 더설렘 글램핑"] }
+    ],
+    "가성비": [
+      { "city": "대구", "spots": ["서문시장 먹거리", "동성로 게스트하우스", "대구 중구 비즈니스호텔"] },
+      { "city": "대전", "spots": ["중앙시장 먹거리", "유성 게스트하우스", "둔산동 비즈니스호텔"] },
+      { "city": "전주", "spots": ["남부시장 먹거리", "한옥마을 게스트하우스", "전주 청년몰"] },
+      { "city": "여수", "spots": ["낭만포차 거리", "여수 게스트하우스", "중앙동 해산물 맛집"] },
+      { "city": "속초", "spots": ["속초 게스트하우스", "중앙시장 먹거리"] },
+      { "city": "강릉", "spots": ["강릉 감성 게하"] },
+      { "city": "경주", "spots": ["황리단길 게스트하우스", "중앙시장 먹거리", "경주 시내 모텔"] },
+      { "city": "담양", "spots": ["국수거리", "담양 게스트하우스", "창평 전통시장"] },
+      { "city": "포천", "spots": ["이동갈비 백반집", "포천 모텔", "캠핑장"] },
+      { "city": "가평", "spots": ["자라섬 게스트하우스", "닭갈비 세트 맛집", "캠핑장"] }
+    ],
+    "부모님": [
+      { "city": "대구", "spots": ["동화사", "수성못", "비슬산 자연휴양림"] },
+      { "city": "대전", "spots": ["유성온천", "한밭수목원", "대청호"] },
+      { "city": "전주", "spots": ["경기전", "전동성당", "한옥마을"] },
+      { "city": "여수", "spots": ["향일암", "오동도", "여수해상케이블카"] },
+      { "city": "속초", "spots": ["설악산 케이블카"] },
+      { "city": "강릉", "spots": ["정동진", "경포호"] },
+      { "city": "경주", "spots": ["불국사", "대릉원", "동궁과 월지"] },
+      { "city": "담양", "spots": ["죽녹원", "소쇄원", "관방제림"] },
+      { "city": "포천", "spots": ["산정호수", "국립수목원", "허브아일랜드"] },
+      { "city": "가평", "spots": ["아침고요수목원", "남이섬", "호명호수"] }
+    ],
+    "친구": [
+      { "city": "대구", "spots": ["동성로", "이월드", "안지랑곱창골목"] },
+      { "city": "대전", "spots": ["오월드", "소제동", "성심당 투어"] },
+      { "city": "전주", "spots": ["남부시장 야시장", "자만벽화마을", "한복체험"] },
+      { "city": "여수", "spots": ["낭만포차", "요트투어", "해양레일바이크"] },
+      { "city": "양양", "spots": ["양양 서핑"] },
+      { "city": "속초", "spots": ["속초시장"] },
+      { "city": "강릉", "spots": ["안목 커피거리"] },
+      { "city": "경주", "spots": ["경주월드", "황리단길", "루지월드"] },
+      { "city": "담양", "spots": ["메타프로방스", "카페거리", "레일바이크"] },
+      { "city": "포천", "spots": ["루지", "글램핑", "포천아트밸리"] },
+      { "city": "가평", "spots": ["빠지", "레일바이크", "글램핑"] }
+    ],
+    "연인": [
+      { "city": "대구", "spots": ["앞산 전망대", "수성못 야경", "김광석 거리"] },
+      { "city": "대전", "spots": ["대동하늘공원 야경", "대청호 드라이브", "소제동 카페거리"] },
+      { "city": "전주", "spots": ["오목대 야경", "한옥마을 야간 산책", "전주천"] },
+      { "city": "여수", "spots": ["여수 밤바다", "돌산공원 야경", "케이블카 야간 탑승"] },
+      { "city": "강릉", "spots": ["강릉 바다열차", "정동진 일출"] },
+      { "city": "동해", "spots": ["묵호등대 야경"] },
+      { "city": "경주", "spots": ["동궁과 월지 야경", "보문호 자전거 데이트", "황리단길 카페"] },
+      { "city": "담양", "spots": ["메타세쿼이아길", "담양호 드라이브", "죽녹원 야간산책"] },
+      { "city": "포천", "spots": ["허브아일랜드 야경", "산정호수 보트", "감성숙소"] },
+      { "city": "가평", "spots": ["남이섬 데이트", "청평호 드라이브", "풀빌라 숙소"] }
+    ],
+    "반려견": [
+      { "city": "대구", "spots": ["대구수목원", "금호강 산책길", "앞산공원"] },
+      { "city": "대전", "spots": ["한밭수목원", "갑천 산책길", "장태산 자연휴양림"] },
+      { "city": "전주", "spots": ["덕진공원", "전주천 산책길", "아중호수"] },
+      { "city": "여수", "spots": ["오동도 산책길", "소호동 해변", "돌산 해안도로"] },
+      { "city": "강릉", "spots": ["경포해변 산책"] },
+      { "city": "속초", "spots": ["영랑호 둘레길"] },
+      { "city": "삼척", "spots": ["삼척 해변 산책로"] },
+      { "city": "경주", "spots": ["보문호 산책길", "황성공원", "감포 해변"] },
+      { "city": "담양", "spots": ["메타세쿼이아길", "관방제림", "담양호 산책길"] },
+      { "city": "포천", "spots": ["산정호수 둘레길", "국립수목원 인근 산책길", "캠핑장"] },
+      { "city": "가평", "spots": ["자라섬 산책길", "잣향기푸른숲", "캠핑장"] }
+    ]
+  },
+  "stats": { "docCount": 1, "cityCount": 12, "mappedAssociations": 0, "updatedAt": "2026-05-13" }
+}
+  </script>
+
+  <script>
+    const screens = {
+      splash: document.getElementById("screen-splash"),
+      intro: document.getElementById("screen-intro"),
+      home: document.getElementById("screen-home"),
+      courses: document.getElementById("screen-courses"),
+      courseDetail: document.getElementById("screen-course-detail"),
+      saved: document.getElementById("screen-saved"),
+      booking: document.getElementById("screen-booking"),
+      lodging: document.getElementById("screen-lodging"),
+      transport: document.getElementById("screen-transport"),
+      payment: document.getElementById("screen-payment"),
+      community: document.getElementById("screen-community"),
+      tools: document.getElementById("screen-tools"),
+      wallet: document.getElementById("screen-wallet"),
+      profile: document.getElementById("screen-profile"),
+      search: document.getElementById("screen-search")
+    };
+
+    const KEYWORDS = [
+      { group: "감정", label: "스트레스", emoji: "💭", ex: "머리 식히고 싶어", tags: ["힐링"] },
+      { group: "감정", label: "감성", emoji: "🌙", ex: "새벽 감성 느끼고 싶어", tags: ["감성", "야경"] },
+      { group: "감정", label: "도피", emoji: "🧳", ex: "그냥 떠나고 싶어", tags: ["바다"] },
+      { group: "감정", label: "활력", emoji: "🔥", ex: "신나게 놀고 싶어", tags: ["익스트림한", "산"] },
+
+      { group: "날씨", label: "비 오는데", emoji: "🌧️", ex: "어디 갈래?", tags: ["로컬"] },
+      { group: "날씨", label: "더위", emoji: "🥵", ex: "더위 피하기", tags: ["힐링"] },
+      { group: "날씨", label: "눈 오는 날", emoji: "❄️", ex: "가기 좋은 곳", tags: ["감성", "야경"] },
+      { group: "날씨", label: "바람", emoji: "🌬️", ex: "드라이브", tags: ["바다"] },
+      { group: "날씨", label: "해 질 때", emoji: "🌇", ex: "노을 코스", tags: ["바다", "감성"] },
+      { group: "날씨", label: "야경", emoji: "✨", ex: "보러 갈래?", tags: ["야경", "감성"] },
+      { group: "날씨", label: "흐린 날", emoji: "☁️", ex: "감성 코스", tags: ["감성"] },
+
+      { group: "컨셉", label: "음식", emoji: "🦐", ex: "해산물 먹고싶어", tags: ["미식"] },
+      { group: "컨셉", label: "감성/사진", emoji: "📷", ex: "야경 명소", tags: ["감성", "야경"] },
+      { group: "컨셉", label: "활동", emoji: "🏄", ex: "액티비티", tags: ["익스트림한", "산"] },
+      { group: "컨셉", label: "휴식", emoji: "🛌", ex: "호캉스", tags: ["힐링"] },
+      { group: "컨셉", label: "가성비", emoji: "💸", ex: "실속", tags: ["가성비 좋은"] },
+
+      { group: "누구", label: "반려견", emoji: "🐶", ex: "같이 가고 싶어", tags: ["걷기 좋은"] },
+      { group: "누구", label: "부모님", emoji: "👨‍👩‍👧", ex: "함께 가고 싶어", tags: ["힐링"] },
+      { group: "누구", label: "친구", emoji: "🧑‍🤝‍🧑", ex: "같이 놀자", tags: ["활동"] },
+      { group: "누구", label: "연인", emoji: "💛", ex: "로맨틱", tags: ["감성"] }
+    ];
+
+    
+
+    const COURSES = [
+      {
+        id: "walk-sea",
+        title: "걷기 좋은 바다 코스",
+        city: "강릉",
+        region: "강원도",
+        emoji: "🏖️",
+        bgClass: "d-gn",
+        tags: ["걷기 좋은", "바다", "감성", "힐링", "야경"],
+        why: "도보 동선으로 묶고, 산책/카페/야경을 끊김 없이 연결했어요.",
+        timeline: [
+          { t: "10:30", n: "해변 산책로 걷기" },
+          { t: "12:30", n: "로컬 점심" },
+          { t: "15:00", n: "카페 투어 + 포토 스팟" },
+          { t: "18:30", n: "야경 포인트" }
+        ],
+        checklist: [
+          { id: "shoes", label: "편한 신발", done: false, tag: "준비물" },
+          { id: "sun", label: "선크림/모자", done: false, tag: "준비물" },
+          { id: "traffic", label: "주차/대중교통 확인", done: false, tag: "이동" }
+        ]
+      },
+      {
+        id: "budget-local",
+        title: "가성비 로컬 시장 코스",
+        city: "전주",
+        region: "전북",
+        emoji: "🧺",
+        bgClass: "d-jj",
+        tags: ["가성비 좋은", "로컬", "시장 구경", "미식"],
+        why: "무료/저가 스팟 위주로 구성하고, 혼잡 시간대를 피해 효율적으로 움직여요.",
+        timeline: [
+          { t: "11:00", n: "전통 거리 산책" },
+          { t: "12:00", n: "시장 점심(예산 상한)" },
+          { t: "14:00", n: "무료 전시/공원" },
+          { t: "16:00", n: "카페(테이크아웃 옵션)" }
+        ],
+        checklist: [
+          { id: "cash", label: "현금/간편결제 확인", done: false, tag: "결제" },
+          { id: "crowd", label: "혼잡 시간 피하기", done: false, tag: "팁" }
+        ]
+      },
+      {
+        id: "extreme-challenge",
+        title: "도전하는 익스트림 코스",
+        city: "속초",
+        region: "강원도",
+        emoji: "⛰️",
+        bgClass: "d-sc",
+        tags: ["익스트림한", "산", "도전"],
+        why: "액티비티 2개를 중심으로 배치하고 예약/준비를 함께 체크해요.",
+        timeline: [
+          { t: "09:30", n: "트레킹/스카이워크" },
+          { t: "12:30", n: "고단백 점심" },
+          { t: "15:00", n: "액티비티(날씨 대체 포함)" },
+          { t: "18:00", n: "온천/회복" }
+        ],
+        checklist: [
+          { id: "reserve", label: "액티비티 예약 확인", done: false, tag: "예약" },
+          { id: "gear", label: "운동화/바람막이", done: false, tag: "준비물" }
+        ]
+      }
+    ];
+
+    const FX_PAIRS = [
+      { pair: "KRW → USD", rate: "1 USD = 1,360 KRW" },
+      { pair: "KRW → JPY", rate: "100 JPY = 900 KRW" },
+      { pair: "KRW → EUR", rate: "1 EUR = 1,480 KRW" }
+    ];
+
+    const CRAWL_STORE_KEY = "trip_mobile_crawl_v4";
+    let crawlState = { byKeyword: {}, byCity: {}, stats: {} };
+    let crawlPresetFileAttempted = false;
+    let crawlPresetFileLoaded = false;
+
+    const appState = {
+      mode: null,
+      keywordGroup: "감정",
+      selectedKeywords: [],
+      recommendation: null,
+      savedPlaces: [],
+      savedCourses: [],
+      recentCourses: [],
+      courseResults: [],
+      activeCourseId: null,
+      activeCourseTab: "summary",
+      savedTab: "saved",
+      booking: {
+        courseId: null,
+        from: "",
+        to: "",
+        people: "성인 2명",
+        lodgingId: null,
+        transportType: "flight",
+        transportId: null,
+        payMethod: "card"
+      },
+      checklist: [],
+      points: 120000,
+      fxPairIndex: 0,
+      reservations: [
+        { type: "숙소", title: "체크인: 호텔", status: "미확인" },
+        { type: "항공", title: "왕복 항공권", status: "확인됨" }
+      ]
+    };
+
+    function introMockReady(ok) {
+      if (ok) return;
+      const mock = document.getElementById("intro-mock");
+      const fallback = document.getElementById("intro-fallback");
+      if (mock) mock.style.display = "none";
+      if (fallback) fallback.style.display = "grid";
+    }
+
+    function setActive(key) {
+      Object.values(screens).forEach((el) => el.classList.remove("active"));
+      screens[key]?.classList.add("active");
+    }
+
+    function setNavActive(key) {
+      const map = { home: "nav-home", community: "nav-community", tools: "nav-tools", wallet: "nav-wallet", profile: "nav-profile" };
+      Object.values(map).forEach((id) => document.getElementById(id)?.classList.remove("active"));
+      const activeId = map[key];
+      if (activeId) document.getElementById(activeId)?.classList.add("active");
+    }
+
+    function navigate(screenKey, navEl) {
+      if (navEl) {
+        document.querySelectorAll(".nav-item").forEach((x) => x.classList.remove("active"));
+        navEl.classList.add("active");
+      } else {
+        setNavActive(screenKey);
+      }
+      if (screenKey === "search") {
+        setActive("search");
+        return;
+      }
+      setActive(screenKey);
+    }
+
+    function startApp(mode) {
+      appState.mode = mode;
+      document.getElementById("bottom-nav").style.display = "grid";
+      loadCrawlData();
+      tryLoadEmbeddedPreset();
+      tryLoadCrawlPresetFile();
+      loadPersisted();
+      appState.selectedKeywords = [];
+      renderAll();
+      navigate("home");
+    }
+
+    function nav(key) {
+      navigate(key);
+    }
+
+    function setKeywordGroup(group) {
+      appState.keywordGroup = group;
+      document.querySelectorAll(".kw-group-row .mc").forEach((x) => x.classList.toggle("on", x.dataset.group === group));
+      appState.recommendation = null;
+      renderHome();
+      persist();
+    }
+
+    function toggleKeyword(label) {
+      const idx = appState.selectedKeywords.indexOf(label);
+      if (idx >= 0) {
+        appState.selectedKeywords.splice(idx, 1);
+      } else {
+        if (appState.selectedKeywords.length >= 6) return;
+        appState.selectedKeywords.push(label);
+      }
+      appState.recommendation = null;
+      renderHome();
+      persist();
+    }
+
+    function resetKeywords() {
+      appState.selectedKeywords = [];
+      appState.recommendation = null;
+      appState.checklist = [];
+      renderHome();
+      persist();
+    }
+
+    function keywordMeta(label) {
+      return KEYWORDS.find((k) => k.label === label) || null;
+    }
+
+    function uniqPlaces(list) {
+      const map = new Map();
+      list.forEach((x) => {
+        const city = x.city;
+        const prev = map.get(city);
+        const spots = sanitizeSpots(Array.isArray(x.spots) ? x.spots : []);
+        if (!prev) {
+          map.set(city, { city, spots: [...spots] });
+        } else {
+          const merged = new Set([...(prev.spots || []), ...spots]);
+          prev.spots = Array.from(merged);
+          map.set(city, prev);
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function loadCrawlData() {
+      try {
+        const raw = localStorage.getItem(CRAWL_STORE_KEY);
+        if (!raw) {
+          crawlState = { byKeyword: {}, byCity: {}, stats: {} };
+          renderCrawlStatus();
+          return;
+        }
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object") return;
+        crawlState = {
+          byKeyword: data.byKeyword && typeof data.byKeyword === "object" ? data.byKeyword : {},
+          byCity: data.byCity && typeof data.byCity === "object" ? data.byCity : {},
+          stats: data.stats && typeof data.stats === "object" ? data.stats : {}
+        };
+        sanitizeCrawlState();
+        renderCrawlStatus();
+      } catch (e) {
+        crawlState = { byKeyword: {}, byCity: {}, stats: {} };
+        renderCrawlStatus();
+      }
+    }
+
+    function tryLoadEmbeddedPreset() {
+      if (Number(crawlState?.stats?.docCount || 0) > 0) return;
+      const el = document.getElementById("crawl-preset");
+      if (!el) return;
+      const raw = String(el.textContent || "").trim();
+      if (!raw || raw === "{}") return;
+      try {
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object") return;
+        mergeCrawlByKeyword(data.byKeyword);
+        if (data.byCity && typeof data.byCity === "object") crawlState.byCity = data.byCity;
+        sanitizeCrawlState();
+        const citySet = new Set();
+        Object.values(crawlState.byKeyword || {}).forEach((arr) => {
+          if (!Array.isArray(arr)) return;
+          arr.forEach((x) => {
+            const c = x && typeof x === "object" ? String(x.city || "").trim() : "";
+            if (c) citySet.add(c);
+          });
+        });
+        crawlState.stats = {
+          ...(crawlState.stats || {}),
+          docCount: Number(data?.stats?.docCount || 0) || 1,
+          cityCount: citySet.size,
+          mappedCount: Number(data?.stats?.mappedAssociations || data?.stats?.mappedCount || 0),
+          updatedAt: data?.stats?.updatedAt ? String(data.stats.updatedAt) : new Date().toLocaleString("ko-KR"),
+          source: "embedded"
+        };
+        saveCrawlData();
+      } catch (e) {}
+    }
+
+    function mergeCrawlByKeyword(presetByKeyword) {
+      if (!presetByKeyword || typeof presetByKeyword !== "object") return;
+      if (!crawlState.byKeyword || typeof crawlState.byKeyword !== "object") crawlState.byKeyword = {};
+
+      Object.keys(presetByKeyword).forEach((label) => {
+        const incoming = presetByKeyword[label];
+        if (!Array.isArray(incoming)) return;
+        if (!Array.isArray(crawlState.byKeyword[label])) crawlState.byKeyword[label] = [];
+
+        const byCity = new Map();
+        crawlState.byKeyword[label].forEach((x) => {
+          if (!x || typeof x !== "object") return;
+          const city = typeof x.city === "string" ? x.city.trim() : "";
+          if (!city) return;
+          x.spots = sanitizeSpots(Array.isArray(x.spots) ? x.spots : []);
+          byCity.set(city, x);
+        });
+
+        incoming.forEach((x) => {
+          if (!x || typeof x !== "object") return;
+          const city = typeof x.city === "string" ? x.city.trim() : "";
+          if (!city) return;
+          const spots = sanitizeSpots(Array.isArray(x.spots) ? x.spots : []);
+
+          const existing = byCity.get(city);
+          if (!existing) {
+            const entry = { city, spots: spots.slice() };
+            crawlState.byKeyword[label].push(entry);
+            byCity.set(city, entry);
+            return;
+          }
+
+          const set = new Set(existing.spots.map((s) => String(s || "").trim()).filter(Boolean));
+          spots.forEach((s) => {
+            const v = String(s || "").trim();
+            if (!v) return;
+            if (set.has(v)) return;
+            set.add(v);
+            existing.spots.push(v);
+          });
+        });
+      });
+    }
+
+    async function tryLoadCrawlPresetFile() {
+      if (crawlPresetFileLoaded) return;
+      if (crawlPresetFileAttempted) return;
+      crawlPresetFileAttempted = true;
+      try {
+        const res = await fetch("crawl_preset.json", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || typeof data !== "object") return;
+        mergeCrawlByKeyword(data.byKeyword);
+        if (data.stats && typeof data.stats === "object") {
+          const citySet = new Set();
+          Object.values(crawlState.byKeyword || {}).forEach((arr) => {
+            if (!Array.isArray(arr)) return;
+            arr.forEach((x) => {
+              const c = x && typeof x === "object" ? String(x.city || "").trim() : "";
+              if (c) citySet.add(c);
+            });
+          });
+
+          crawlState.stats = {
+            ...(crawlState.stats || {}),
+            docCount: Number(data.stats.docCount || 0),
+            cityCount: citySet.size,
+            mappedCount: Number(data.stats.mappedAssociations || 0),
+            updatedAt: data.stats.updatedAt ? String(data.stats.updatedAt) : "",
+            source: "crawl_preset.json"
+          };
+        }
+        crawlPresetFileLoaded = true;
+        saveCrawlData();
+        renderHome();
+      } catch (e) {}
+    }
+
+    function saveCrawlData() {
+      try {
+        localStorage.setItem(CRAWL_STORE_KEY, JSON.stringify(crawlState));
+      } catch (e) {}
+      renderCrawlStatus();
+    }
+
+    function renderCrawlStatus() {
+      const status = document.getElementById("crawl-status");
+      const statsEl = document.getElementById("crawl-stats");
+      const docCount = Number(crawlState?.stats?.docCount || 0);
+      const cityCount = Number(crawlState?.stats?.cityCount || 0);
+      const mappedCount = Number(crawlState?.stats?.mappedCount || 0);
+      const updatedAt = crawlState?.stats?.updatedAt ? String(crawlState.stats.updatedAt) : "";
+      const source = crawlState?.stats?.source ? String(crawlState.stats.source) : "";
+      if (status) status.textContent = docCount > 0 ? `상태: 업로드됨 (${docCount}개 문서)` : "상태: 미업로드";
+      if (statsEl) statsEl.textContent = docCount > 0 ? `도시 ${cityCount} · 키워드 매핑 ${mappedCount}${updatedAt ? ` · ${updatedAt}` : ""}${source ? ` · ${source}` : ""}` : "";
+    }
+
+    function openCrawlPicker() {
+      const input = document.getElementById("crawl-file");
+      if (!input) return;
+      input.value = "";
+      input.click();
+    }
+
+    function resetCrawlData() {
+      crawlState = { byKeyword: {}, byCity: {}, stats: {} };
+      try { localStorage.removeItem(CRAWL_STORE_KEY); } catch (e) {}
+      renderCrawlStatus();
+      renderHome();
+    }
+
+    function norm(text) {
+      return String(text || "")
+        .replace(/\u0000/g, "")
+        .replace(/[<>{}]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    const SPOT_STOP_CONTAINS = [
+      "내돈내산", "협찬", "광고", "체험단", "원고료",
+      "주의", "주의사항", "준비물", "꿀팁", "팁", "정리", "총정리",
+      "영업시간", "운영시간", "전화", "문의", "주소", "위치", "지도",
+      "가격", "요금", "입장료", "예약", "주차", "주차장",
+      "후기", "리뷰", "포스팅", "블로그", "인스타", "링크", "URL"
+    ];
+
+    const SPOT_STOP_EXACT = new Set([
+      "가는길", "오는길", "내려오는길", "올라오는길", "돌아오는길",
+      "귀성길", "귀경길", "퇴근길", "출근길",
+      "산책길", "둘레길", "데크길", "계단길", "하천길",
+      "가파른길", "위험길", "좁은길", "이쁜길", "예쁜길",
+      "전통시장", "중앙시장",
+      "국립공원"
+    ]);
+
+    function cleanSpot(raw) {
+      let s = norm(raw)
+        .replace(/[\u200b-\u200d\uFEFF]/g, "")
+        .replace(/^[\s"'“”‘’()[\]{}<>]+|[\s"'“”‘’()[\]{}<>]+$/g, "")
+        .replace(/[·•]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!s) return "";
+      if (s.length < 2 || s.length > 32) return "";
+      if (/https?:\/\/|www\./i.test(s)) return "";
+      if (/^n[가-힣A-Za-z0-9]/.test(s)) return "";
+      if (s.includes("이루어지길") || /되길$/.test(s)) return "";
+      if (SPOT_STOP_EXACT.has(s)) return "";
+      for (const frag of SPOT_STOP_CONTAINS) {
+        if (frag && s.includes(frag)) return "";
+      }
+      if (/(?:전망대)?(?:가는|오는|내려오는|올라오는|돌아오는|귀성|귀경|퇴근|출근)\s*길$/.test(s)) return "";
+      return s;
+    }
+
+    function sanitizeSpots(spots) {
+      const out = [];
+      const seen = new Set();
+      (Array.isArray(spots) ? spots : []).forEach((v) => {
+        const s = cleanSpot(v);
+        if (!s) return;
+        if (seen.has(s)) return;
+        seen.add(s);
+        out.push(s);
+      });
+      return out;
+    }
+
+    function sanitizeCrawlState() {
+      const byKeyword = crawlState?.byKeyword;
+      if (byKeyword && typeof byKeyword === "object") {
+        Object.values(byKeyword).forEach((arr) => {
+          if (!Array.isArray(arr)) return;
+          arr.forEach((entry) => {
+            if (!entry || typeof entry !== "object") return;
+            entry.spots = sanitizeSpots(Array.isArray(entry.spots) ? entry.spots : []);
+          });
+        });
+      }
+      const byCity = crawlState?.byCity;
+      if (byCity && typeof byCity === "object") {
+        Object.values(byCity).forEach((c) => {
+          if (!c || typeof c !== "object") return;
+          c.spots = sanitizeSpots(Array.isArray(c.spots) ? c.spots : []);
+        });
+      }
+    }
+
+    function extractCities(text) {
+      const t = String(text || "");
+      const found = new Set();
+      const known = [
+        "강릉","동해","부산","제주","제주도","경주","여수","월미도","송도","인천","담양","속초","양양","가평","남양주","대전","대관령","전주","남해","안동","포항","대구",
+        "춘천","김천","구미","논산","하남","파주","김포","동탄","이천","용인","충주","단양","평창","홍천","부여","공주","강화","영종도","을왕리","아산","무주","포천","서울","울릉도",
+        "울진","영덕","김제","예천","공주","군산","서산","태안","제천","화성","고창","곡성","하동","사천","순천","통영","창녕","군포","원주","영주","밀양","합천","함안","창경궁","창경궁"
+      ];
+      known.forEach((c) => {
+        if (c && t.includes(c)) found.add(c === "제주도" ? "제주" : c);
+      });
+      const addr = t.matchAll(/([가-힣]{2,})(?:특별자치도|특별시|광역시|도)\s*([가-힣]{2,})(시|군|구)/g);
+      for (const m of addr) {
+        if (m[2]) found.add(m[2]);
+      }
+      const simple = t.matchAll(/([가-힣]{2,})(시|군|구)\b/g);
+      for (const m of simple) {
+        const base = m[1];
+        if (!base) continue;
+        if (["여행","국내","추천","준비","가볼만한곳","맛집","주차","코스"].includes(base)) continue;
+        if (base.length >= 2 && base.length <= 5) found.add(base);
+      }
+      return Array.from(found).filter(Boolean);
+    }
+
+    function extractSpots(text) {
+      const t = String(text || "");
+      const spots = new Set();
+      for (const m of t.matchAll(/#([가-힣A-Za-z0-9]{2,30})/g)) {
+        const v = m[1];
+        const c = cleanSpot(v);
+        if (c) spots.add(c);
+      }
+      for (const m of t.matchAll(/([가-힣A-Za-z0-9\s]{2,30}(?:해변|시장|마을|공원|산|온천|케이블카|축제|리조트|호텔|월드|아울렛|백화점|스튜디오|박람회|항|사|사찰|절|호수|길|광장))/g)) {
+        const v = norm(m[1]).replace(/\s+/g, " ");
+        const c = cleanSpot(v);
+        if (c) spots.add(c);
+      }
+      return Array.from(spots);
+    }
+
+    function detectWho(text) {
+      const t = String(text || "");
+      const who = new Set();
+      if (/(반려견|강아지|댕댕|애견)/.test(t)) who.add("반려견");
+      if (/(부모님|엄마|아빠|어머니|아버지|효도)/.test(t)) who.add("부모님");
+      if (/(연인|커플|남친|여친|데이트|신혼)/.test(t)) who.add("연인");
+      return Array.from(who);
+    }
+
+    function detectWeather(text) {
+      const t = String(text || "");
+      const w = new Set();
+      if (/(비|우천|장마|비오는|비 오)/.test(t)) w.add("비 오는데");
+      if (/(더위|폭염|무더위|덥)/.test(t)) w.add("더위");
+      if (/(눈|설경|눈 오는)/.test(t)) w.add("눈 오는 날");
+      if (/(바람|강풍)/.test(t)) w.add("바람");
+      if (/(노을|해질|해 질 때|석양)/.test(t)) w.add("해 질 때");
+      if (/(야경|야간|밤바다|밤 산책)/.test(t)) w.add("야경");
+      if (/(흐림|흐린|구름|미세먼지)/.test(t)) w.add("흐린 날");
+      return Array.from(w);
+    }
+
+    function detectConcept(text) {
+      const t = String(text || "");
+      const c = new Set();
+      if (/(맛집|먹방|회|대게|게장|막창|찜닭|닭갈비|비빔밥|고등어회|흑돼지|말고기|한라봉|시장|축제|성심당)/.test(t)) c.add("음식");
+      if (/(사진|포토|감성|야경|노을|해맞이|일출|벽화|한옥|마을|골목|전시|유적|사찰|절)/.test(t)) c.add("감성/사진");
+      if (/(액티비티|서핑|스키|보드|패러글라이딩|래프팅|요트|루지|테마파크|월드|e월드|오월드|에버랜드|캐리비안베이|짚라인|스카이다이빙|열기구|경비행기|카트|스쿠터)/.test(t)) c.add("활동");
+      if (/(휴식|힐링|온천|스파|호캉스|호텔|리조트|글램핑|캠핑|대형카페|드라이브|템플스테이|산림욕)/.test(t)) c.add("휴식");
+      if (/(가성비|반값|할인|지원|환급|무료)/.test(t)) c.add("가성비");
+      return Array.from(c);
+    }
+
+    function detectEmotion(text) {
+      const t = String(text || "");
+      const score = { "힐링": 0, "도피": 0, "감성": 0, "활력": 0 };
+      if (/(힐링|휴식|편안|쉬|온천|조용|산책|캠핑|글램핑|템플)/.test(t)) score["힐링"] += 2;
+      if (/(도피|그냥 떠나|떠나고 싶|집에 가고싶|아무것도 하기 싫)/.test(t)) score["도피"] += 2;
+      if (/(감성|낭만|새벽|노을|야경|사진|밤바다)/.test(t)) score["감성"] += 2;
+      if (/(신나|재미|액티비티|도전|놀이공원|서핑|스키|패러글라이딩|래프팅|요트|루지|월드)/.test(t)) score["활력"] += 2;
+      const best = Object.entries(score).sort((a, b) => b[1] - a[1])[0];
+      if (!best || best[1] === 0) return null;
+      return best[0];
+    }
+
+    function addToMap(map, key, city, spots) {
+      if (!key || !city) return;
+      if (!map[key]) map[key] = [];
+      map[key].push({ city, spots: Array.isArray(spots) ? spots : [] });
+    }
+
+    function preprocessCrawlText(text) {
+      const lines = String(text || "").split(/\r?\n/);
+      const docs = [];
+      let cur = [];
+      const urlRe = /^https?:\/\/(m\.)?(blog\.naver\.com|m\.blog\.naver\.com)|^blog\.naver\.com|^m\.blog\.naver\.com/i;
+      for (const raw of lines) {
+        const line = String(raw || "").trim();
+        if (urlRe.test(line)) {
+          if (cur.length) docs.push(cur.join("\n"));
+          cur = [];
+          continue;
+        }
+        if (!line) continue;
+        cur.push(line);
+        if (cur.length > 200) {
+          docs.push(cur.join("\n"));
+          cur = [];
+        }
+      }
+      if (cur.length) docs.push(cur.join("\n"));
+
+      const byKeyword = {};
+      const byCity = {};
+      let mappedCount = 0;
+
+      const keywordSet = new Set(KEYWORDS.map((k) => k.label));
+      const ensureCity = (city) => {
+        if (!byCity[city]) byCity[city] = { city, who: new Set(), weather: new Set(), concept: new Set(), emotion: new Set(), spots: new Set() };
+        return byCity[city];
+      };
+
+      docs.forEach((doc) => {
+        const t = String(doc || "");
+        if (t.length < 60) return;
+        const cities = extractCities(t);
+        const spots = extractSpots(t);
+        const who = detectWho(t);
+        const weather = detectWeather(t);
+        const concept = detectConcept(t);
+        const emotion = detectEmotion(t);
+
+        const targets = new Set();
+        who.forEach((x) => targets.add(x));
+        weather.forEach((x) => targets.add(x));
+        if (concept.includes("음식")) targets.add("음식");
+        if (concept.includes("감성/사진")) targets.add("감성/사진");
+        if (concept.includes("활동")) targets.add("활동");
+        if (concept.includes("휴식")) targets.add("휴식");
+        if (concept.includes("가성비")) targets.add("가성비");
+
+        if (emotion === "힐링") { targets.add("스트레스"); targets.add("휴식"); }
+        if (emotion === "도피") targets.add("도피");
+        if (emotion === "감성") { targets.add("감성"); targets.add("감성/사진"); }
+        if (emotion === "활력") { targets.add("활력"); targets.add("활동"); }
+
+        const applied = Array.from(targets).filter((k) => keywordSet.has(k));
+        if (!applied.length) return;
+
+        (cities.length ? cities : ["국내"]).forEach((city) => {
+          const c = ensureCity(city);
+          who.forEach((x) => c.who.add(x));
+          weather.forEach((x) => c.weather.add(x));
+          concept.forEach((x) => c.concept.add(x));
+          if (emotion) c.emotion.add(emotion);
+          spots.forEach((s) => c.spots.add(s));
+
+          applied.forEach((k) => addToMap(byKeyword, k, city, spots));
+          mappedCount += applied.length;
+        });
+      });
+
+      const byCityOut = {};
+      Object.keys(byCity).forEach((city) => {
+        const c = byCity[city];
+        byCityOut[city] = {
+          city,
+          who: Array.from(c.who),
+          weather: Array.from(c.weather),
+          concept: Array.from(c.concept),
+          emotion: Array.from(c.emotion),
+          spots: Array.from(c.spots)
+        };
+      });
+
+      const mergedKeyword = {};
+      Object.keys(byKeyword).forEach((k) => {
+        mergedKeyword[k] = uniqPlaces(byKeyword[k]);
+      });
+
+      crawlState = {
+        byKeyword: mergedKeyword,
+        byCity: byCityOut,
+        stats: {
+          docCount: docs.length,
+          cityCount: Object.keys(byCityOut).length,
+          mappedCount,
+          updatedAt: new Date().toLocaleString("ko-KR")
+        }
+      };
+      saveCrawlData();
+      renderHome();
+    }
+
+    function destinationsForKeyword(label) {
+      const crawled = crawlState?.byKeyword?.[label];
+      if (!Array.isArray(crawled)) return [];
+      return uniqPlaces(crawled);
+    }
+
+    function destinationsForSelection() {
+      if (appState.selectedKeywords.length === 0) return [];
+      const out = [];
+      appState.selectedKeywords.forEach((k) => destinationsForKeyword(k).forEach((x) => out.push(x)));
+      return uniqPlaces(out);
+    }
+
+    function selectedSignals() {
+      const set = new Set();
+      KEYWORDS.forEach((k) => {
+        if (!appState.selectedKeywords.includes(k.label)) return;
+        (k.tags || []).forEach((t) => set.add(t));
+      });
+      return Array.from(set);
+    }
+
+    function scoreCourse(course, keywords) {
+      let score = 0;
+      const set = new Set(selectedSignals().concat(keywords));
+      course.tags.forEach((t) => { if (set.has(t)) score += 3; });
+      if (keywords.length === 0) score += 1;
+      return score;
+    }
+
+    function pickCourse() {
+      const ranked = COURSES
+        .map((c) => ({ c, s: scoreCourse(c, appState.selectedKeywords) }))
+        .sort((a, b) => b.s - a.s);
+      const top = ranked.slice(0, 2);
+      const pick = top.length === 1 ? top[0] : (Math.random() < 0.65 ? top[0] : top[1]);
+      return pick.c;
+    }
+
+    function buildRecommendation() {
+      const places = destinationsForSelection();
+      if (places.length === 0) {
+        if (appState.selectedKeywords.length > 0 && Number(crawlState?.stats?.docCount || 0) === 0) {
+          alert("추천 데이터셋이 로드되지 않았어요. 프로필 > 크롤링 데이터에서 crawl_preset.json을 업로드해 주세요.");
+          return;
+        }
+        if (appState.selectedKeywords.length > 0) {
+          appState.recommendation = null;
+          appState.checklist = [];
+          renderAll();
+          persist();
+          return;
+        }
+        const course = pickCourse();
+        appState.recommendation = { ...course, seed: Date.now(), createdAt: new Date().toISOString() };
+        appState.checklist = course.checklist.map((x) => ({ ...x }));
+        renderAll();
+        persist();
+        return;
+      }
+
+      const pick = places[Math.floor(Math.random() * places.length)];
+      const pickSpots = Array.isArray(pick.spots) ? pick.spots : [];
+      const times = ["10:30", "12:30", "15:00", "18:30"];
+      const timeline = pickSpots.slice(0, 4).map((n, idx) => ({ t: times[idx] || "12:00", n }));
+      const keywords = appState.selectedKeywords.slice(0, 3).join(" · ") || "상황 맞춤";
+      const title = `${keywords} 코스`;
+
+      appState.recommendation = {
+        id: `dyn-${pick.city}-${Date.now()}`,
+        title,
+        city: pick.city,
+        region: "국내",
+        emoji: "✈️",
+        bgClass: "d-gn",
+        tags: selectedSignals().slice(0, 6),
+        why: "선택한 키워드에 맞춰 관련 여행지를 묶어서 코스를 만들었어요.",
+        timeline,
+        seed: Date.now(),
+        createdAt: new Date().toISOString()
+      };
+
+      appState.checklist = [
+        { id: "tickets", label: "예약/티켓 확인", done: false, tag: "예약" },
+        { id: "weather", label: "날씨/복장 체크", done: false, tag: "준비물" },
+        { id: "route", label: "동선/이동시간 확인", done: false, tag: "이동" }
+      ];
+
+      renderAll();
+      persist();
+    }
+
+    function randomKeywords() {
+      const pool = KEYWORDS.map((k) => k.label);
+      appState.selectedKeywords = [];
+      const pickCount = 3;
+      while (appState.selectedKeywords.length < pickCount) {
+        const k = pool[Math.floor(Math.random() * pool.length)];
+        if (!appState.selectedKeywords.includes(k)) appState.selectedKeywords.push(k);
+      }
+      appState.recommendation = null;
+      renderHome();
+      persist();
+    }
+
+    function saveRecommendation() {
+      if (!appState.recommendation) return;
+      const exists = appState.savedCourses.some((c) => c.id === appState.recommendation.id);
+      if (!exists) {
+        appState.savedCourses.unshift({
+          id: appState.recommendation.id,
+          title: appState.recommendation.title,
+          city: appState.recommendation.city,
+          emoji: appState.recommendation.emoji,
+          bgClass: appState.recommendation.bgClass,
+          createdAt: appState.recommendation.createdAt,
+          keywords: [...appState.selectedKeywords]
+        });
+      }
+      const placeExists = appState.savedPlaces.some((p) => p.name === appState.recommendation.city);
+      if (!placeExists) {
+        appState.savedPlaces.unshift({
+          name: appState.recommendation.city,
+          sub: appState.recommendation.title,
+          emoji: appState.recommendation.emoji,
+          bgClass: appState.recommendation.bgClass
+        });
+      }
+      renderHome();
+      persist();
+    }
+
+    function toggleChecklist(id) {
+      const item = appState.checklist.find((x) => x.id === id);
+      if (!item) return;
+      item.done = !item.done;
+      renderHome();
+      persist();
+    }
+
+    function renderHome() {
+      const chipsEl = document.getElementById("theme-chips");
+      const selected = document.getElementById("kw-selected");
+      const saved = document.getElementById("saved-places");
+      const assistList = document.getElementById("assist-list");
+      const assistTitle = document.getElementById("assist-title");
+      const assistStatus = document.getElementById("assist-status");
+
+      if (chipsEl) {
+        const order = { "감정": 0, "날씨": 1, "컨셉": 2, "누구": 3 };
+        const list = [...KEYWORDS].sort((a, b) => (order[a.group] ?? 99) - (order[b.group] ?? 99));
+        chipsEl.innerHTML = list.map((k) => {
+          const on = appState.selectedKeywords.includes(k.label);
+          const safe = k.label.replace(/'/g, "\\'");
+          const emoji = String(k.emoji || "");
+          const label = String(k.label || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          return `<button type="button" class="theme-chip ${on ? "on" : ""}" onclick="toggleKeyword('${safe}')"><span class="ic" aria-hidden="true">${emoji}</span>${label}</button>`;
+        }).join("");
+      }
+
+      if (selected) {
+        if (appState.selectedKeywords.length === 0) {
+          selected.innerHTML = `<div class="kw-pill"><b>TIP</b> 키워드 1~3개만 골라도 충분해요</div>`;
+        } else {
+          selected.innerHTML = appState.selectedKeywords.map((k) => `<div class="kw-pill">#${k}</div>`).join("");
+        }
+      }
+
+      if (saved) {
+        const list = appState.savedCourses.slice(0, 10);
+        if (list.length === 0) {
+          saved.innerHTML = `<div class="saved-chip" onclick="navigate('saved')"><div class="saved-img d-gn">📌</div><div class="saved-name">저장된 코스</div><div class="saved-sub">아직 없음</div></div>`;
+        } else {
+          saved.innerHTML = list.map((p) => `
+            <div class="saved-chip" onclick="openCourseDetail('${String(p.id).replace(/'/g, "\\'")}')">
+              <button type="button" class="saved-del" onclick="event.stopPropagation(); deleteSavedCourse('${String(p.id).replace(/'/g, "\\'")}')" aria-label="저장 코스 삭제">✕</button>
+              <div class="saved-img ${p.bgClass || "d-gn"}">${p.emoji || "📌"}</div>
+              <div class="saved-name">${p.title}</div>
+              <div class="saved-sub">${p.nights}박 ${p.days}일</div>
+            </div>
+          `).join("");
+        }
+      }
+
+      const total = appState.checklist.length;
+      const done = appState.checklist.filter((x) => x.done).length;
+      if (assistTitle) assistTitle.textContent = "방문 예정 코스";
+      if (assistStatus) assistStatus.textContent = `준비 ${done} / ${total}`;
+      if (assistList) {
+        if (total === 0) {
+          assistList.innerHTML = `<div class="assist-item"><div class="dot">!</div><div>코스를 저장하면, 숙소/교통/결제까지 한 번에 진행할 수 있어요</div><div class="tag">안내</div></div>`;
+        } else {
+          assistList.innerHTML = appState.checklist.map((x) => `
+            <div class="assist-item ${x.done ? "done" : ""}" onclick="toggleChecklist('${x.id.replace(/'/g, "\\'")}')">
+              <div class="dot">${x.done ? "✓" : "•"}</div>
+              <div>${x.label}</div>
+              <div class="tag">${x.tag}</div>
+            </div>
+          `).join("");
+        }
+      }
+    }
+
+    function courseImageUrl(city) {
+      const c = String(city || "");
+      const map = {
+        "대구": "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
+        "대전": "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1200&q=80",
+        "전주": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
+        "여수": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
+        "강릉": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
+        "속초": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+        "경주": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80"
+      };
+      return map[c] || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80";
+    }
+
+    function buildCourseResults() {
+      const kws = appState.selectedKeywords.slice(0, 6);
+      const places = destinationsForSelection();
+      const keywordLine = kws.join(" · ") || "상황 맞춤";
+      const results = places.map((p) => {
+        const spots = Array.isArray(p.spots) ? p.spots.slice(0, 14) : [];
+        const nights = Math.min(3, Math.max(2, Math.round(spots.length / 5)));
+        const days = nights + 1;
+        const title = `${p.city} ${keywordLine} ${nights}박 ${days}일 코스`;
+        const sub = spots.length ? `추천 스팟: ${spots.slice(0, 4).join(", ")}${spots.length > 4 ? "…" : ""}` : "선택한 키워드에 맞춘 코스";
+        const tags = kws.slice(0, 3).map((k) => `#${k}`).concat(spots.slice(0, 2).map((s) => `#${s.replace(/\s+/g, "")}`)).slice(0, 3);
+        return {
+          id: `c_${String(p.city).replace(/\s+/g, "")}_${Math.random().toString(16).slice(2)}`,
+          city: p.city,
+          title,
+          subtitle: sub,
+          nights,
+          days,
+          peopleLabel: "2인 기준",
+          tags,
+          spots,
+          keywords: [...kws],
+          imageUrl: courseImageUrl(p.city),
+          emoji: "✨",
+          bgClass: "d-gn"
+        };
+      });
+      results.sort((a, b) => (b.spots.length - a.spots.length) || (a.city.localeCompare(b.city)));
+      appState.courseResults = results.slice(0, 8);
+    }
+
+    function goCourses() {
+      if (appState.selectedKeywords.length === 0) {
+        alert("키워드를 먼저 선택해 주세요.");
+        return;
+      }
+      const docCount = Number(crawlState?.stats?.docCount || 0);
+      if (docCount === 0) {
+        alert("추천 데이터셋이 로드되지 않았어요. 프로필 > 크롤링 데이터에서 crawl_preset.json 업로드 또는 내장 데이터 사용을 확인해 주세요.");
+        return;
+      }
+      buildCourseResults();
+      renderCourses();
+      navigate("courses");
+    }
+
+    function renderCourses() {
+      const selected = document.getElementById("course-selected");
+      const list = document.getElementById("course-list");
+      if (selected) {
+        selected.innerHTML = appState.selectedKeywords.slice(0, 6).map((k) => `<div class="seg-pill">#${k}</div>`).join("");
+      }
+      if (list) {
+        const courses = appState.courseResults || [];
+        if (courses.length === 0) {
+          list.innerHTML = `<div class="card"><div class="card-pad"><div style="font-weight:900;letter-spacing:-0.02em;">추천 결과가 없어요</div><div class="small muted" style="margin-top:6px;">다른 키워드로 다시 시도해 보세요.</div></div></div>`;
+        } else {
+          list.innerHTML = courses.map((c, idx) => `
+            <div class="course-card" onclick="openCourseDetail('${c.id.replace(/'/g, "\\'")}')">
+              <div class="course-hero">
+                <img src="${c.imageUrl}" alt="${String(c.city).replace(/</g, "&lt;").replace(/>/g, "&gt;")} 코스 이미지" />
+                ${idx === 0 ? `<div class="badge-best">BEST</div>` : ``}
+                <div class="heart" aria-hidden="true">♡</div>
+              </div>
+              <div class="course-body">
+                <div class="course-title">${c.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="course-sub">${c.subtitle.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="course-meta">
+                  <div>🗓️ ${c.nights}박 ${c.days}일</div>
+                  <div>👤 ${c.peopleLabel}</div>
+                  <div>🎁 TRI:P 추천</div>
+                </div>
+                <div class="tag-row">${c.tags.map((t) => `<div class="tag-chip">${t}</div>`).join("")}</div>
+              </div>
+            </div>
+          `).join("");
+        }
+      }
+    }
+
+    function openCourseDetail(courseId) {
+      appState.activeCourseId = courseId;
+      appState.activeCourseTab = "summary";
+      const course = findCourse(courseId);
+      if (course) {
+        const exists = appState.recentCourses.some((x) => x.id === course.id);
+        if (!exists) appState.recentCourses.unshift({ ...course, viewedAt: new Date().toISOString() });
+      }
+      renderCourseDetail();
+      persist();
+      navigate("courseDetail");
+    }
+
+    function findCourse(courseId) {
+      return (appState.courseResults || []).find((x) => x.id === courseId)
+        || (appState.savedCourses || []).find((x) => x.id === courseId)
+        || (appState.recentCourses || []).find((x) => x.id === courseId)
+        || null;
+    }
+
+    function setCourseTab(tab) {
+      appState.activeCourseTab = tab;
+      renderCourseDetail();
+      persist();
+    }
+
+    function renderCourseDetail() {
+      const host = document.getElementById("cd-content");
+      const course = findCourse(appState.activeCourseId);
+      if (!host) return;
+      if (!course) {
+        host.innerHTML = `<div class="card"><div class="card-pad"><div style="font-weight:900;letter-spacing:-0.02em;">코스를 찾을 수 없어요</div></div></div>`;
+        return;
+      }
+
+      const tab = appState.activeCourseTab || "summary";
+      const tabButtons = `
+        <div class="tabs" aria-label="코스 탭">
+          <button type="button" class="tab ${tab === "summary" ? "on" : ""}" onclick="setCourseTab('summary')">코스 요약</button>
+          <button type="button" class="tab ${tab === "detail" ? "on" : ""}" onclick="setCourseTab('detail')">상세 일정</button>
+          <button type="button" class="tab ${tab === "incl" ? "on" : ""}" onclick="setCourseTab('incl')">포함/불포함</button>
+        </div>
+      `;
+
+      const highlights = course.spots.slice(0, 6);
+      const dayChunks = [];
+      const perDay = Math.max(3, Math.ceil(course.spots.length / course.days));
+      for (let i = 0; i < course.days; i++) {
+        const slice = course.spots.slice(i * perDay, (i + 1) * perDay);
+        if (slice.length) dayChunks.push({ day: i + 1, spots: slice });
+      }
+
+      const body = tab === "summary"
+        ? `
+          <div class="cd-icons" aria-label="코스 요약 아이콘">
+            <div class="cd-ic">✈<div style="height:6px"></div>공항 도착</div>
+            <div class="cd-ic">🏨<div style="height:6px"></div>숙소 체크인</div>
+            <div class="cd-ic">📍<div style="height:6px"></div>관광/체험</div>
+            <div class="cd-ic">🍽️<div style="height:6px"></div>맛집 탐방</div>
+          </div>
+          <div style="margin-top:12px;font-weight:900;letter-spacing:-0.02em;">하이라이트</div>
+          <div class="card" style="margin-top:10px;">
+            <div class="card-pad" style="display:grid;gap:8px;">
+              ${highlights.map((h) => `<div class="assist-item"><div class="dot">•</div><div>${String(h).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div><div class="tag">추천</div></div>`).join("")}
+            </div>
+          </div>
+        `
+        : tab === "detail"
+          ? `
+            ${dayChunks.map((d) => `
+              <div class="card" style="margin-top:12px;">
+                <div class="card-pad">
+                  <div style="font-weight:900;letter-spacing:-0.02em;">Day ${d.day}</div>
+                  <div style="height:10px"></div>
+                  <div style="display:grid;gap:8px;">
+                    ${d.spots.map((s, idx) => `<div class="assist-item"><div class="dot">${idx + 1}</div><div>${String(s).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div><div class="tag">코스</div></div>`).join("")}
+                  </div>
+                </div>
+              </div>
+            `).join("")}
+          `
+          : `
+            <div class="card" style="margin-top:12px;">
+              <div class="card-pad" style="display:grid;gap:10px;">
+                <div class="assist-item"><div class="dot">✓</div><div>코스 추천</div><div class="tag">포함</div></div>
+                <div class="assist-item"><div class="dot">✓</div><div>키워드 기반 스팟 구성</div><div class="tag">포함</div></div>
+                <div class="assist-item"><div class="dot">—</div><div>결제/예약 확정</div><div class="tag">불포함</div></div>
+              </div>
+            </div>
+          `;
+
+      host.innerHTML = `
+        <div class="cd-hero">
+          <img src="${course.imageUrl}" alt="${String(course.city).replace(/</g, "&lt;").replace(/>/g, "&gt;")} 코스 이미지" />
+          <div class="badge-best">BEST</div>
+          <div class="heart" aria-hidden="true">♡</div>
+        </div>
+        <div style="margin-top:10px;font-weight:900;letter-spacing:-0.03em;font-size:18px;line-height:1.25;">${course.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+        <div class="small muted" style="margin-top:6px;font-weight:900;line-height:1.55;">${course.subtitle.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+        <div class="course-meta" style="margin-top:10px;">
+          <div>🗓️ ${course.nights}박 ${course.days}일</div>
+          <div>👤 ${course.peopleLabel}</div>
+          <div>✨ TRI:P 추천</div>
+        </div>
+        ${tabButtons}
+        ${body}
+        <button type="button" class="theme-cta" style="margin-top:14px;" onclick="saveActiveCourse()">코스 저장하기</button>
+      `;
+    }
+
+    function saveActiveCourse() {
+      const course = findCourse(appState.activeCourseId);
+      if (!course) return;
+      const exists = appState.savedCourses.some((x) => x.id === course.id);
+      if (!exists) appState.savedCourses.unshift({ ...course, savedAt: new Date().toISOString() });
+      persist();
+      renderSaved();
+      navigate("saved");
+    }
+
+    function deleteSavedCourse(courseId) {
+      const id = String(courseId || "");
+      const idx = appState.savedCourses.findIndex((x) => String(x.id) === id);
+      if (idx < 0) return;
+      const ok = confirm("저장한 코스를 삭제할까요?");
+      if (!ok) return;
+      appState.savedCourses.splice(idx, 1);
+      persist();
+      renderHome();
+      renderSaved();
+      renderProfile();
+    }
+
+    function shareCourse() {
+      alert("공유(프로토타입)");
+    }
+
+    function setSavedTab(tab) {
+      appState.savedTab = tab;
+      renderSaved();
+      persist();
+    }
+
+    function renderSaved() {
+      const tabSaved = document.getElementById("saved-tab-saved");
+      const tabRecent = document.getElementById("saved-tab-recent");
+      const list = document.getElementById("saved-list");
+      const tab = appState.savedTab || "saved";
+      if (tabSaved) tabSaved.style.background = tab === "saved" ? "#fff0c7" : "rgba(255,255,255,0.74)";
+      if (tabRecent) tabRecent.style.background = tab === "recent" ? "#fff0c7" : "rgba(255,255,255,0.74)";
+      if (!list) return;
+      const src = tab === "recent" ? (appState.recentCourses || []) : (appState.savedCourses || []);
+      if (src.length === 0) {
+        list.innerHTML = `<div class="card"><div class="card-pad"><div style="font-weight:900;letter-spacing:-0.02em;">아직 코스가 없어요</div><div class="small muted" style="margin-top:6px;">코스를 저장하면 여기에 표시돼요.</div></div></div>`;
+        return;
+      }
+      list.innerHTML = src.map((c) => {
+        const date = c.savedAt ? String(c.savedAt).slice(0, 10) : (c.viewedAt ? String(c.viewedAt).slice(0, 10) : "");
+        return `
+          <div class="saved-course-row" onclick="startBooking('${c.id.replace(/'/g, "\\'")}')">
+            <div class="saved-thumb"><img src="${c.imageUrl}" alt="" /></div>
+            <div class="saved-main">
+              <div class="t">${c.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+              <div class="s">${c.nights}박 ${c.days}일${date ? ` · 저장일 ${date}` : ""}</div>
+            </div>
+            <div class="saved-side">
+              <div style="font-weight:900;color:rgba(17,17,17,0.62);">♡</div>
+              <button type="button" class="saved-cta" onclick="event.stopPropagation(); startBooking('${c.id.replace(/'/g, "\\'")}')">예약 가능</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function startBooking(courseId) {
+      appState.booking.courseId = courseId;
+      if (!appState.booking.from || !appState.booking.to) {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14);
+        const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 3);
+        appState.booking.from = start.toISOString().slice(0, 10);
+        appState.booking.to = end.toISOString().slice(0, 10);
+      }
+      renderBooking();
+      persist();
+      navigate("booking");
+    }
+
+    function renderBooking() {
+      const host = document.getElementById("booking-content");
+      if (!host) return;
+      const course = findCourse(appState.booking.courseId);
+      if (!course) {
+        host.innerHTML = `<div class="card"><div class="card-pad"><div style="font-weight:900;">코스를 선택해 주세요</div></div></div>`;
+        return;
+      }
+      host.innerHTML = `
+        <div class="card">
+          <div class="card-pad" style="display:flex;gap:12px;align-items:center;">
+            <div style="width:74px;height:56px;border-radius:14px;overflow:hidden;border:1px solid rgba(17,17,17,0.06);background:rgba(255,255,255,0.72);">
+              <img src="${course.imageUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
+            </div>
+            <div style="display:grid;gap:4px;flex:1;">
+              <div style="font-weight:900;letter-spacing:-0.02em;">여행 정보</div>
+              <div class="small muted" style="font-weight:900;">${course.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+              <div class="small muted" style="font-weight:900;">${course.nights}박 ${course.days}일</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">여행 일정</div>
+          <div class="field-row">
+            <input class="inp" type="date" value="${appState.booking.from}" onchange="setBookingDate('from', this.value)" />
+            <div style="font-weight:900;color:rgba(17,17,17,0.62);">~</div>
+            <input class="inp" type="date" value="${appState.booking.to}" onchange="setBookingDate('to', this.value)" />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">여행 인원</div>
+          <div class="field-row">
+            <select class="inp" onchange="setBookingPeople(this.value)">
+              ${["성인 1명","성인 2명","성인 3명","성인 4명"].map((x) => `<option value="${x}" ${appState.booking.people === x ? "selected" : ""}>${x}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+
+        <div class="card" style="background:rgba(47,128,237,0.10);border-color:rgba(47,128,237,0.16);">
+          <div class="card-pad" style="font-weight:900;color:rgba(17,17,17,0.72);">
+            숙박과 교통을 선택하면<br />맞춤 추천을 확인할 수 있어요!
+          </div>
+        </div>
+      `;
+    }
+
+    function setBookingDate(key, value) {
+      if (key === "from") appState.booking.from = value;
+      if (key === "to") appState.booking.to = value;
+      persist();
+    }
+    function setBookingPeople(value) {
+      appState.booking.people = value;
+      persist();
+    }
+
+    function lodgingOptionsForCourse(course) {
+      const base = String(course?.city || "여행지");
+      return [
+        { id: "l1", title: `${base} 오션뷰 호텔`, rating: 4.8, price: 180000, tags: ["오션뷰", "조식 포함", "무료 취소"] },
+        { id: "l2", title: `감성 숲속 펜션`, rating: 4.7, price: 150000, tags: ["독채", "바베큐", "무료 취소"] },
+        { id: "l3", title: `${base} 시티 호텔`, rating: 4.5, price: 120000, tags: ["조식", "주차 가능", "무료 취소"] }
+      ];
+    }
+
+    function goLodging() {
+      const course = findCourse(appState.booking.courseId);
+      if (!course) return;
+      if (!appState.booking.lodgingId) appState.booking.lodgingId = "l1";
+      renderLodging();
+      persist();
+      navigate("lodging");
+    }
+
+    function selectLodging(id) {
+      appState.booking.lodgingId = id;
+      renderLodging();
+      persist();
+    }
+
+    function renderLodging() {
+      const list = document.getElementById("lodging-list");
+      const course = findCourse(appState.booking.courseId);
+      if (!list || !course) return;
+      const items = lodgingOptionsForCourse(course);
+      list.innerHTML = items.map((h) => `
+        <div class="course-card" onclick="selectLodging('${h.id}')">
+          <div class="course-hero">
+            <img src="${courseImageUrl(course.city)}" alt="${h.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}" />
+            <div class="badge-best">${h.id === "l1" ? "추천" : " "}</div>
+            <div class="heart" aria-hidden="true">${appState.booking.lodgingId === h.id ? "♥" : "♡"}</div>
+          </div>
+          <div class="course-body">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+              <div style="display:grid;gap:4px;">
+                <div class="course-title">${h.title.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="course-sub">⭐ ${h.rating} (189)</div>
+                <div class="tag-row">${h.tags.slice(0, 3).map((t) => `<div class="tag-chip">#${t.replace(/\s+/g, "")}</div>`).join("")}</div>
+              </div>
+              <div style="font-weight:900;white-space:nowrap;">₩${Number(h.price).toLocaleString("ko-KR")}~</div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function goTransport() {
+      renderTransport();
+      persist();
+      navigate("transport");
+    }
+
+    function setTransportType(type) {
+      appState.booking.transportType = type;
+      document.getElementById("tr-tab-flight")?.classList.toggle("on", type === "flight");
+      document.getElementById("tr-tab-car")?.classList.toggle("on", type === "car");
+      document.getElementById("tr-tab-bus")?.classList.toggle("on", type === "bus");
+      document.getElementById("tr-tab-train")?.classList.toggle("on", type === "train");
+      renderTransport();
+      persist();
+    }
+
+    function transportOptions(type) {
+      const course = findCourse(appState.booking.courseId);
+      const to = course?.city || "목적지";
+      if (type === "car") {
+        return [
+          { id: "c1", left: "08:00", right: "18:00", from: "대여", to: "반납", price: 69000, name: "렌터카(소형)" },
+          { id: "c2", left: "09:00", right: "19:00", from: "대여", to: "반납", price: 89000, name: "렌터카(중형)" }
+        ];
+      }
+      if (type === "bus") {
+        return [
+          { id: "b1", left: "09:10", right: "12:10", from: "서울", to, price: 25000, name: "고속버스" },
+          { id: "b2", left: "10:40", right: "13:40", from: "서울", to, price: 22000, name: "시외버스" }
+        ];
+      }
+      if (type === "train") {
+        return [
+          { id: "t1", left: "08:20", right: "10:05", from: "서울", to, price: 48000, name: "KTX" },
+          { id: "t2", left: "10:00", right: "12:20", from: "서울", to, price: 32000, name: "무궁화" }
+        ];
+      }
+      return [
+        { id: "f1", left: "09:20", right: "10:30", from: "GMP", to: to, price: 66000, name: "항공" },
+        { id: "f2", left: "11:40", right: "12:50", from: "GMP", to: to, price: 68000, name: "항공" },
+        { id: "f3", left: "13:30", right: "14:40", from: "GMP", to: to, price: 59000, name: "항공" }
+      ];
+    }
+
+    function selectTransport(id) {
+      appState.booking.transportId = id;
+      renderTransport();
+      persist();
+    }
+
+    function renderTransport() {
+      const host = document.getElementById("transport-content");
+      if (!host) return;
+      const type = appState.booking.transportType || "flight";
+      const opts = transportOptions(type);
+      if (!appState.booking.transportId) appState.booking.transportId = opts[0]?.id || null;
+      host.innerHTML = `
+        <div class="field">
+          <div class="field-label">가는 편</div>
+          <div class="field-row">
+            <div class="inp" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div style="font-weight:900;">서울 → 목적지</div>
+              <div style="color:rgba(17,17,17,0.62);font-weight:900;">${(appState.booking.from || "").slice(5)}</div>
+            </div>
+          </div>
+          <div style="height:10px"></div>
+          <div class="field-label">오는 편</div>
+          <div class="field-row">
+            <div class="inp" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div style="font-weight:900;">목적지 → 서울</div>
+              <div style="color:rgba(17,17,17,0.62);font-weight:900;">${(appState.booking.to || "").slice(5)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-pad" style="display:grid;gap:10px;">
+            ${opts.map((o) => `
+              <div class="assist-item ${appState.booking.transportId === o.id ? "done" : ""}" onclick="selectTransport('${o.id}')">
+                <div class="dot">${appState.booking.transportId === o.id ? "✓" : "•"}</div>
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;">
+                  <div style="display:flex;gap:12px;align-items:center;">
+                    <div style="font-weight:900;min-width:48px;">${o.left}</div>
+                    <div style="color:rgba(17,17,17,0.62);font-weight:900;">${o.from}</div>
+                    <div style="color:rgba(17,17,17,0.42);font-weight:900;">→</div>
+                    <div style="font-weight:900;min-width:48px;">${o.right}</div>
+                    <div style="color:rgba(17,17,17,0.62);font-weight:900;">${o.to}</div>
+                  </div>
+                  <div style="font-weight:900;white-space:nowrap;">₩${Number(o.price).toLocaleString("ko-KR")}~</div>
+                </div>
+                <div class="tag">${o.name}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function goPayment() {
+      renderPayment();
+      persist();
+      navigate("payment");
+    }
+
+    function paymentTotal() {
+      const course = findCourse(appState.booking.courseId);
+      const lodging = lodgingOptionsForCourse(course).find((x) => x.id === appState.booking.lodgingId);
+      const nights = course?.nights || 2;
+      const lodgingCost = (lodging?.price || 120000) * nights;
+      const tr = transportOptions(appState.booking.transportType).find((x) => x.id === appState.booking.transportId);
+      const transportCost = (tr?.price || 30000) * 2;
+      return lodgingCost + transportCost;
+    }
+
+    function setPayMethod(method) {
+      appState.booking.payMethod = method;
+      renderPayment();
+      persist();
+    }
+
+    function renderPayment() {
+      const methods = document.getElementById("pay-methods");
+      const totalEl = document.getElementById("pay-total");
+      const cta = document.getElementById("pay-cta");
+      const total = paymentTotal();
+      if (totalEl) totalEl.textContent = `${Number(total).toLocaleString("ko-KR")}원`;
+      if (cta) cta.textContent = `${Number(total).toLocaleString("ko-KR")}원 결제하기`;
+      if (methods) {
+        const items = [
+          { id: "card", label: "신용/체크카드" },
+          { id: "kakao", label: "카카오페이" },
+          { id: "naver", label: "네이버페이" },
+          { id: "toss", label: "토스페이" }
+        ];
+        methods.innerHTML = items.map((m) => `<div class="pay-m ${appState.booking.payMethod === m.id ? "on" : ""}" onclick="setPayMethod('${m.id}')">${m.label}</div>`).join("");
+      }
+    }
+
+    function completePayment() {
+      const agree = document.getElementById("pay-agree");
+      if (agree && !agree.checked) {
+        alert("동의 후 결제를 진행해 주세요.");
+        return;
+      }
+      alert("결제가 완료되었습니다. (프로토타입)");
+      navigate("home");
+    }
+
+    function renderTools() {
+      const dest = document.getElementById("map-dest");
+      const r1 = document.getElementById("map-resv-1");
+      const r2 = document.getElementById("map-resv-2");
+      const c = appState.recommendation;
+      if (dest) dest.textContent = c ? `📍 ${c.city} 주변` : "📍 목적지";
+      const rs = appState.reservations;
+      if (r1) r1.textContent = rs[0] ? `🏨 ${rs[0].title}` : "🏨 숙소";
+      if (r2) r2.textContent = rs[1] ? `✈ ${rs[1].title}` : "✈ 항공";
+    }
+
+    function renderWallet() {
+      const fx = FX_PAIRS[appState.fxPairIndex % FX_PAIRS.length];
+      const fxPair = document.getElementById("fx-pair");
+      const fxRate = document.getElementById("fx-rate");
+      const pt = document.getElementById("pt-balance");
+      const list = document.getElementById("resv-list");
+      if (fxPair) fxPair.textContent = fx.pair;
+      if (fxRate) fxRate.textContent = fx.rate;
+      if (pt) pt.textContent = `보유 포인트 ${Number(appState.points).toLocaleString("ko-KR")}P`;
+      if (list) {
+        list.innerHTML = appState.reservations.map((r, idx) => `
+          <div class="assist-item ${r.status === "확인됨" ? "done" : ""}" onclick="toggleReservation(${idx})">
+            <div class="dot">${r.status === "확인됨" ? "✓" : "•"}</div>
+            <div>${r.type} · ${r.title}</div>
+            <div class="tag">${r.status}</div>
+          </div>
+        `).join("");
+      }
+    }
+
+    function renderProfile() {
+      const summary = document.getElementById("profile-summary");
+      const list = document.getElementById("profile-saved");
+      if (summary) summary.textContent = `저장 ${appState.savedCourses.length} · 예약 ${appState.reservations.length}`;
+      if (!list) return;
+      const items = appState.savedCourses.slice(0, 4);
+      if (items.length === 0) {
+        list.innerHTML = `<div class="assist-item"><div class="dot">!</div><div>저장한 코스가 없어요. 홈에서 코스를 저장해보세요.</div><div class="tag">안내</div></div>`;
+        return;
+      }
+      list.innerHTML = items.map((c) => `
+        <div class="assist-item">
+          <div class="dot">${c.emoji || "•"}</div>
+          <div>${c.city} · ${c.title}</div>
+          <div class="tag">저장됨</div>
+        </div>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderHome();
+      renderCourses();
+      renderCourseDetail();
+      renderSaved();
+      renderBooking();
+      renderLodging();
+      renderTransport();
+      renderPayment();
+      renderTools();
+      renderWallet();
+      renderProfile();
+    }
+
+    function toggleReservation(index) {
+      const r = appState.reservations[index];
+      if (!r) return;
+      r.status = r.status === "확인됨" ? "미확인" : "확인됨";
+      renderTools();
+      renderWallet();
+      persist();
+    }
+
+    function changeFx() {
+      appState.fxPairIndex = (appState.fxPairIndex + 1) % FX_PAIRS.length;
+      renderWallet();
+      persist();
+    }
+
+    function requestFx() {
+      alert("환전 신청(프로토타입)");
+    }
+
+    function topUpPoints() {
+      appState.points += 50000;
+      renderWallet();
+      persist();
+    }
+
+    function payWithPoints() {
+      alert("포인트 결제(프로토타입)");
+    }
+
+    function addReservation() {
+      appState.reservations.unshift({ type: "예약", title: "새 예약", status: "미확인" });
+      renderTools();
+      renderWallet();
+      persist();
+    }
+
+    function runTranslate() {
+      const input = document.getElementById("tx-in");
+      const out = document.getElementById("tx-out");
+      const from = document.getElementById("tx-from");
+      const to = document.getElementById("tx-to");
+      if (!input || !out || !from || !to) return;
+      const txt = String(input.value || "").trim();
+      if (!txt) {
+        out.textContent = "문장을 입력하면 번역 결과가 표시됩니다.";
+        return;
+      }
+      const lang = `${from.value}→${to.value}`;
+      out.textContent = `[${lang}] ${txt}`;
+    }
+
+    function clearTranslate() {
+      const input = document.getElementById("tx-in");
+      const out = document.getElementById("tx-out");
+      if (input) input.value = "";
+      if (out) out.textContent = "번역 결과가 여기에 표시됩니다.";
+    }
+
+    function quickReview(label) {
+      const el = document.getElementById("quick-review-status");
+      if (el) el.textContent = `최근 선택: ${label}`;
+      alert(`후기 남김: ${label}`);
+    }
+
+    function persist() {
+      try {
+        const payload = {
+          mode: appState.mode,
+          keywordGroup: appState.keywordGroup,
+          recommendation: appState.recommendation,
+          savedPlaces: appState.savedPlaces,
+          savedCourses: appState.savedCourses,
+          recentCourses: appState.recentCourses,
+          booking: appState.booking,
+          savedTab: appState.savedTab,
+          checklist: appState.checklist,
+          points: appState.points,
+          fxPairIndex: appState.fxPairIndex,
+          reservations: appState.reservations
+        };
+        localStorage.setItem("trip_mobile_state_v6", JSON.stringify(payload));
+      } catch (e) {}
+    }
+
+    function loadPersisted() {
+      try {
+        const raw = localStorage.getItem("trip_mobile_state_v6");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data && typeof data === "object") {
+          if (typeof data.keywordGroup === "string") appState.keywordGroup = data.keywordGroup;
+          if (data.recommendation) appState.recommendation = data.recommendation;
+          if (Array.isArray(data.savedPlaces)) appState.savedPlaces = data.savedPlaces.slice(0, 20);
+          if (Array.isArray(data.savedCourses)) appState.savedCourses = data.savedCourses.slice(0, 20);
+          if (Array.isArray(data.recentCourses)) appState.recentCourses = data.recentCourses.slice(0, 20);
+          if (data.booking && typeof data.booking === "object") appState.booking = { ...appState.booking, ...data.booking };
+          if (typeof data.savedTab === "string") appState.savedTab = data.savedTab;
+          if (Array.isArray(data.checklist)) appState.checklist = data.checklist.slice(0, 20);
+          if (typeof data.points === "number") appState.points = data.points;
+          if (typeof data.fxPairIndex === "number") appState.fxPairIndex = data.fxPairIndex;
+          if (Array.isArray(data.reservations)) appState.reservations = data.reservations.slice(0, 20);
+          if (typeof data.mode === "string") appState.mode = data.mode;
+        }
+      } catch (e) {}
+    }
+
+    window.setTimeout(() => {
+      setActive("intro");
+      loadCrawlData();
+      tryLoadEmbeddedPreset();
+      renderAll();
+    }, 300);
+
+    const crawlInput = document.getElementById("crawl-file");
+    if (crawlInput) {
+      crawlInput.addEventListener("change", (e) => {
+        const file = e?.target?.files?.[0];
+        if (!file) return;
+        const status = document.getElementById("crawl-status");
+        if (status) status.textContent = "상태: 처리 중…";
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const raw = String(reader.result || "");
+            const name = String(file.name || "");
+            if (name.toLowerCase().endsWith(".json")) {
+              const data = JSON.parse(raw);
+              if (!data || typeof data !== "object") throw new Error("invalid json");
+              const byKeyword = data.byKeyword && typeof data.byKeyword === "object" ? data.byKeyword : {};
+              const byCity = data.byCity && typeof data.byCity === "object" ? data.byCity : {};
+              crawlState = { byKeyword, byCity, stats: (data.stats && typeof data.stats === "object") ? { ...data.stats } : {} };
+              sanitizeCrawlState();
+              const citySet = new Set();
+              Object.values(crawlState.byKeyword || {}).forEach((arr) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach((x) => {
+                  const c = x && typeof x === "object" ? String(x.city || "").trim() : "";
+                  if (c) citySet.add(c);
+                });
+              });
+              crawlState.stats = {
+                ...(crawlState.stats || {}),
+                docCount: Number(crawlState?.stats?.docCount || 0),
+                cityCount: citySet.size,
+                mappedCount: Number(crawlState?.stats?.mappedAssociations || crawlState?.stats?.mappedCount || 0),
+                updatedAt: crawlState?.stats?.updatedAt ? String(crawlState.stats.updatedAt) : new Date().toLocaleString("ko-KR"),
+                source: name
+              };
+              saveCrawlData();
+              appState.recommendation = null;
+              renderAll();
+              persist();
+              return;
+            }
+            preprocessCrawlText(raw);
+          } catch (err) {
+            if (status) status.textContent = "상태: 처리 실패";
+          }
+        };
+        reader.onerror = () => {
+          if (status) status.textContent = "상태: 파일 읽기 실패";
+        };
+        reader.readAsText(file, "utf-8");
+      });
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
