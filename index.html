@@ -1,14 +1,113 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="description" content="여행 기획 서비스 프로토타입" />
-    <title>TRI:P</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRI:P</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: linear-gradient(135deg, #eef7ff, #ffffff 55%, #fff6df);
+      --text: #111827;
+      --muted: rgba(17, 24, 39, 0.62);
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --card: rgba(255, 255, 255, 0.92);
+      --border: rgba(17, 24, 39, 0.08);
+      --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .card {
+      width: min(100%, 480px);
+      padding: 32px 28px;
+      border-radius: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .logo {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .actions {
+      margin-top: 22px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #38bdf8, var(--primary));
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(17, 24, 39, 0.1);
+      color: var(--text);
+    }
+  </style>
+  <script>
+    window.addEventListener("load", () => {
+      window.setTimeout(() => {
+        location.href = "./prototype_web/mobile_div2.html";
+      }, 700);
+    });
+  </script>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="./logo.png" alt="TRI:P 로고" />
+    <h1>TRI:P</h1>
+    <p>잠시 후 프로토타입으로 이동합니다.<br />자동으로 열리지 않으면 아래 버튼을 눌러주세요.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="./prototype_web/mobile_div2.html">TRI:P 바로 열기</a>
+      <a class="btn btn-secondary" href="./prototype_web/mobile_div_presentation.html">발표용 버전 열기</a>
+    </div>
+  </main>
+</body>
 </html>
